@@ -9,6 +9,8 @@
 #import "RACDisposable.h"
 #import "RACScopedDisposable.h"
 #import <libkern/OSAtomic.h>
+#import <stdatomic.h>
+#import <stdint.h>
 
 @interface RACDisposable () {
 	// A copied block of type void (^)(void) containing the logic for disposal,
@@ -31,11 +33,24 @@
 
 #pragma mark Lifecycle
 
+static volatile _Atomic int_fast16_t counter;
+
++ (void)initialize {
+	[super initialize];
+
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		atomic_init(&counter, 0);
+	});
+}
+
 - (instancetype)init {
 	self = [super init];
 
 	_disposeBlock = (__bridge void *)self;
 	OSMemoryBarrier();
+
+	NSLog(@"+ disposables: %d", atomic_fetch_add(&counter, 1));
 
 	return self;
 }
@@ -48,6 +63,8 @@
 	_disposeBlock = (void *)CFBridgingRetain([block copy]); 
 	OSMemoryBarrier();
 
+	NSLog(@"+ disposables: %d", atomic_fetch_add(&counter, 1));
+
 	return self;
 }
 
@@ -56,6 +73,12 @@
 }
 
 - (void)dealloc {
+	NSLog(@"- disposables: %d", atomic_fetch_sub(&counter, 1));
+
+	if (counter < 0) {
+		NSLog(@"");
+	}
+
 	if (_disposeBlock == NULL || _disposeBlock == (__bridge void *)self) return;
 
 	CFRelease(_disposeBlock);
