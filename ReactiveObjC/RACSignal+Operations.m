@@ -1344,7 +1344,7 @@ static RACDisposable *subscribeForever (RACSignal *signal, void (^next)(id), voi
 		}
 		RACTuple *arguments = [RACTuple tupleWithObjectsFromArray:[tupleArray subarrayWithRange:NSMakeRange(1, tupleArray.count - 1)]];
 
-		return [RACBlockTrampoline invokeBlock:tuple[0] withArguments:arguments];
+		return RACInvokeBlock(tuple[0], arguments);
 	}] setNameWithFormat:@"[%@] -reduceApply", self.name];
 }
 
