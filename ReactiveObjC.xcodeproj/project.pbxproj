@@ -201,6 +201,8 @@
 		7DFBED6C1CDB8DE300EE435B /* RACTestUIButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C3131D19EF2D9700984962 /* RACTestUIButton.m */; };
 		7DFBED6E1CDB918900EE435B /* UIBarButtonItem+RACCommandSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = D03764C719EDA41200A782A9 /* UIBarButtonItem+RACCommandSupport.m */; };
 		7DFBED6F1CDB926400EE435B /* UIBarButtonItem+RACCommandSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = D03764C619EDA41200A782A9 /* UIBarButtonItem+RACCommandSupport.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8B2B786F1F3780C300156B00 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B786E1F3780C300156B00 /* UIKit.framework */; };
+		8B2B78711F3780CA00156B00 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B78701F3780CA00156B00 /* MapKit.framework */; };
 		8B9A2B541F26433000E7748D /* RACBlockTrampoline.h in Headers */ = {isa = PBXBuildFile; fileRef = D037646219EDA41200A782A9 /* RACBlockTrampoline.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		A1046B7A1BFF5661004D8045 /* EXTRuntimeExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = D037666719EDA57100A782A9 /* EXTRuntimeExtensions.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		A1046B7B1BFF5662004D8045 /* EXTRuntimeExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = D037666719EDA57100A782A9 /* EXTRuntimeExtensions.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -771,6 +773,8 @@
 		7A70657E1A3F88B8001E8354 /* RACKVOProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RACKVOProxy.m; sourceTree = "<group>"; };
 		7A7065831A3F8967001E8354 /* RACKVOProxySpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RACKVOProxySpec.m; sourceTree = "<group>"; };
 		7DFBED031CDB8C9500EE435B /* ReactiveObjCTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReactiveObjCTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B2B786E1F3780C300156B00 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		8B2B78701F3780CA00156B00 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk/System/Library/Frameworks/MapKit.framework; sourceTree = DEVELOPER_DIR; };
 		A97451331B3A935E00F48E55 /* watchOS-Application.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "watchOS-Application.xcconfig"; sourceTree = "<group>"; };
 		A97451341B3A935E00F48E55 /* watchOS-Base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "watchOS-Base.xcconfig"; sourceTree = "<group>"; };
 		A97451351B3A935E00F48E55 /* watchOS-Framework.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "watchOS-Framework.xcconfig"; sourceTree = "<group>"; };
@@ -1101,6 +1105,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B2B78711F3780CA00156B00 /* MapKit.framework in Frameworks */,
+				8B2B786F1F3780C300156B00 /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1126,6 +1132,15 @@
 				57A4D2471BA13F9700F7D4B1 /* tvOS-StaticLibrary.xcconfig */,
 			);
 			path = tvOS;
+			sourceTree = "<group>";
+		};
+		8B2B786D1F3780C300156B00 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8B2B78701F3780CA00156B00 /* MapKit.framework */,
+				8B2B786E1F3780C300156B00 /* UIKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		A97451321B3A935E00F48E55 /* watchOS */ = {
@@ -1158,6 +1173,7 @@
 				D04725F919E49ED7006002AA /* ReactiveObjCTests */,
 				D047262519E49FE8006002AA /* Configuration */,
 				D04725EB19E49ED7006002AA /* Products */,
+				8B2B786D1F3780C300156B00 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 			usesTabs = 1;
