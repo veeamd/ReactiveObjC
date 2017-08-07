@@ -1177,20 +1177,19 @@ static RACDisposable *subscribeForever (RACSignal *signal, void (^next)(id), voi
 - (RACSignal *)any:(BOOL (^)(id object))predicateBlock {
   NSCParameterAssert(predicateBlock != NULL);
 
-  return [[[self materialize] bind:^{
-    return ^(RACEvent *event, BOOL *stop) {
-      if (event.finished) {
-        *stop = YES;
-        return [RACSignal return:@NO];
+  return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    return [self subscribeNext:^(id x) {
+      if (predicateBlock(x)) {
+        [subscriber sendNext:@YES];
+        [subscriber sendCompleted];
       }
-
-      if (predicateBlock(event.value)) {
-        *stop = YES;
-        return [RACSignal return:@YES];
-      }
-
-      return [RACSignal empty];
-    };
+    } error:^(NSError *error) {
+      [subscriber sendNext:@NO];
+      [subscriber sendCompleted];
+    } completed:^{
+      [subscriber sendNext:@NO];
+      [subscriber sendCompleted];
+    }];
   }] setNameWithFormat:@"[%@] -any:", self.name];
 }
 

@@ -3214,6 +3214,108 @@ qck_describe(@"+zip:", ^{
   });
 });
 
+qck_describe(@"-any", ^{
+  qck_it(@"should return true when one value is sent", ^{
+    RACSignal *any = [[RACSignal return:@0] any];
+
+    NSMutableArray *values = [NSMutableArray array];
+    __block BOOL completed = NO;
+    [any subscribeNext:^(NSNumber *value) {
+      [values addObject:value];
+    } completed:^{
+      completed = YES;
+    }];
+    expect(values).to(equal(@[@YES]));
+    expect(@(completed)).to(equal(@YES));
+  });
+
+  qck_it(@"should return false when no value is sent and the signal completes", ^{
+    RACSignal *any = [[RACSignal empty] any];
+
+    NSMutableArray *values = [NSMutableArray array];
+    __block BOOL completed = NO;
+    [any subscribeNext:^(NSNumber *value) {
+      [values addObject:value];
+    } completed:^{
+      completed = YES;
+    }];
+    expect(values).to(equal(@[@NO]));
+    expect(@(completed)).to(equal(@YES));
+  });
+
+  qck_it(@"should return false when no value is sent and the signal errs", ^{
+    RACSignal *any = [[RACSignal error:RACSignalTestError] any];
+
+    NSMutableArray *values = [NSMutableArray array];
+    __block BOOL completed = NO;
+    [any subscribeNext:^(NSNumber *value) {
+      [values addObject:value];
+    } completed:^{
+      completed = YES;
+    }];
+    expect(values).to(equal(@[@NO]));
+    expect(@(completed)).to(equal(@YES));
+  });
+});
+
+qck_describe(@"-any:", ^{
+  __block RACSignal *signal;
+
+  qck_beforeEach(^{
+    signal = [[[RACSignal return:@0] concat:[RACSignal return:@1]] concat:[RACSignal return:@2]];
+  });
+  
+  qck_it(@"should return true when the predicate is truthy for at least one value", ^{
+    RACSignal *any = [signal any:^BOOL(NSNumber *value) {
+      return value.integerValue > 0;
+    }];
+
+    NSMutableArray *values = [NSMutableArray array];
+    __block BOOL completed = NO;
+    [any subscribeNext:^(NSNumber *value) {
+      [values addObject:value];
+    } completed:^{
+      completed = YES;
+    }];
+    expect(values).to(equal(@[@YES]));
+    expect(@(completed)).to(equal(@YES));
+  });
+  
+  qck_it(@"should return false when the predicate is falsy for all values", ^{
+    RACSignal *any = [signal any:^BOOL(NSNumber *value) {
+      return value.integerValue == 3;
+    }];
+
+    NSMutableArray *values = [NSMutableArray array];
+    __block BOOL completed = NO;
+    [any subscribeNext:^(NSNumber *value) {
+      [values addObject:value];
+    } completed:^{
+      completed = YES;
+    }];
+    expect(values).to(equal(@[@NO]));
+    expect(@(completed)).to(equal(@YES));
+  });
+
+  qck_it(@"should return false when signal errs", ^{
+    RACSignal *any = [[signal
+        concat:[RACSignal error:RACSignalTestError]]
+        any:^BOOL(NSNumber *value) {
+          return value.integerValue == 3;
+        }];
+
+    NSMutableArray *values = [NSMutableArray array];
+    __block BOOL completed = NO;
+    [any subscribeNext:^(NSNumber *value) {
+      [values addObject:value];
+    } completed:^{
+      completed = YES;
+    }];
+    expect(values).to(equal(@[@NO]));
+    expect(@(completed)).to(equal(@YES));
+  });
+});
+
 qck_describe(@"-sample:", ^{
   __block RACSubject *subject;
   __block RACSubject *sampleSubject;
