@@ -427,6 +427,32 @@
   }] setNameWithFormat:@"[%@] -skip: %lu", self.name, (unsigned long)skipCount];
 }
 
+- (instancetype)take:(NSUInteger)count {
+  if (!count) {
+    return [RACSignal empty];
+  }
+
+  return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    __block NSUInteger taken = 0;
+
+    return [self subscribeNext:^(id x) {
+      // Avoid sending more than `count` values for recursive signals.
+      if (taken >= count) {
+        return;
+      }
+
+      ++taken;
+      [subscriber sendNext:x];
+
+      if (taken >= count) {
+        [subscriber sendCompleted];
+      }
+    } error:^(NSError *error) {
+      [subscriber sendError:error];
+    } completed:^{
+      [subscriber sendCompleted];
+    }];
+  }] setNameWithFormat:@"[%@] -take: %lu", self.name, (unsigned long)count];
 }
 
 @end
