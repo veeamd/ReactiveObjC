@@ -405,6 +405,30 @@
   }];
 }
 
+- (instancetype)skip:(NSUInteger)skipCount {
+  if (!skipCount) {
+    return self;
+  }
+
+  return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    __block NSUInteger skipped = 0;
+
+    return [self subscribeNext:^(id x) {
+      if (skipped >= skipCount) {
+        [subscriber sendNext:x];
+        return;
+      }
+      ++skipped;
+    } error:^(NSError *error) {
+      [subscriber sendError:error];
+    } completed:^{
+      [subscriber sendCompleted];
+    }];
+  }] setNameWithFormat:@"[%@] -skip: %lu", self.name, (unsigned long)skipCount];
+}
+
+}
+
 @end
 
 @implementation RACSignal (Subscription)
