@@ -455,6 +455,28 @@
   }] setNameWithFormat:@"[%@] -take: %lu", self.name, (unsigned long)count];
 }
 
+- (instancetype)distinctUntilChanged {
+  return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    __block id lastValue = nil;
+    __block BOOL initial = YES;
+
+    return [self subscribeNext:^(id x) {
+      BOOL isEqual = lastValue == x || [x isEqual:lastValue];
+      if (!initial && isEqual) {
+        return;
+      }
+
+      initial = NO;
+      lastValue = x;
+      [subscriber sendNext:x];
+    } error:^(NSError *error) {
+      [subscriber sendError:error];
+    } completed:^{
+      [subscriber sendCompleted];
+    }];
+  }] setNameWithFormat:@"[%@] -distinctUntilChanged", self.name];
+}
+
 @end
 
 @implementation RACSignal (Subscription)
