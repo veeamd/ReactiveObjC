@@ -3316,6 +3316,64 @@ qck_describe(@"-any:", ^{
   });
 });
 
+qck_describe(@"-all:", ^{
+  __block RACSignal *signal;
+
+  qck_beforeEach(^{
+    signal = [[[RACSignal return:@0] concat:[RACSignal return:@1]] concat:[RACSignal return:@2]];
+  });
+  
+  qck_it(@"should return true when all values pass", ^{
+    RACSignal *all = [signal all:^BOOL(NSNumber *value) {
+      return value.integerValue >= 0;
+    }];
+
+    NSMutableArray *values = [NSMutableArray array];
+    __block BOOL completed = NO;
+    [all subscribeNext:^(NSNumber *value) {
+      [values addObject:value];
+    } completed:^{
+      completed = YES;
+    }];
+    expect(values).to(equal(@[@YES]));
+    expect(@(completed)).to(equal(@YES));
+  });
+  
+  qck_it(@"should return false when at least one value fails", ^{
+    RACSignal *all = [signal all:^BOOL(NSNumber *value) {
+      return value.integerValue < 2;
+    }];
+
+    NSMutableArray *values = [NSMutableArray array];
+    __block BOOL completed = NO;
+    [all subscribeNext:^(NSNumber *value) {
+      [values addObject:value];
+    } completed:^{
+      completed = YES;
+    }];
+    expect(values).to(equal(@[@NO]));
+    expect(@(completed)).to(equal(@YES));
+  });
+
+  qck_it(@"should return false when signal errs", ^{
+    RACSignal *all = [[signal
+        concat:[RACSignal error:RACSignalTestError]]
+        all:^BOOL(NSNumber *value) {
+          return value.integerValue >= 0;
+        }];
+
+    NSMutableArray *values = [NSMutableArray array];
+    __block BOOL completed = NO;
+    [all subscribeNext:^(NSNumber *value) {
+      [values addObject:value];
+    } completed:^{
+      completed = YES;
+    }];
+    expect(values).to(equal(@[@NO]));
+    expect(@(completed)).to(equal(@YES));
+  });
+});
+
 qck_describe(@"-sample:", ^{
   __block RACSubject *subject;
   __block RACSubject *sampleSubject;
