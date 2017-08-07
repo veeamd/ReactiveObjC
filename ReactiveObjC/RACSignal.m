@@ -361,6 +361,50 @@
   }] setNameWithFormat:@"[%@] -filter:", self.name];
 }
 
+- (instancetype)flattenMap:(RACSignal *(^)(id))block {
+  return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    __block volatile int32_t subscriptionCount = 1;
+
+    RACCompoundDisposable *disposable = [RACCompoundDisposable compoundDisposable];
+
+    RACDisposable *outerDisposable = [self subscribeNext:^(id x) {
+      if (disposable.disposed) {
+        return;
+      }
+
+      RACSignal *signal = block(x);
+      if (!signal) {
+        return;
+      }
+      NSCAssert([signal isKindOfClass:RACSignal.class], @"Expected a RACSignal, got %@", signal);
+
+      OSAtomicIncrement32(&subscriptionCount);
+
+      RACDisposable *innerDisposable = [signal subscribeNext:^(id x) {
+        [subscriber sendNext:x];
+      } error:^(NSError *error) {
+        [subscriber sendError:error];
+        [disposable dispose];
+      } completed:^{
+        if (!OSAtomicDecrement32(&subscriptionCount)) {
+          [subscriber sendCompleted];
+        }
+      }];
+
+      [disposable addDisposable:innerDisposable];
+    } error:^(NSError *error) {
+      [subscriber sendError:error];
+    } completed:^{
+      if (!OSAtomicDecrement32(&subscriptionCount)) {
+        [subscriber sendCompleted];
+      }
+    }];
+
+    [disposable addDisposable:outerDisposable];
+    return disposable;
+  }];
+}
+
 @end
 
 @implementation RACSignal (Subscription)
