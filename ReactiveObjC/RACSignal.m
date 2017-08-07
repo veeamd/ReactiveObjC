@@ -494,6 +494,24 @@
           RACDescription(startingValue)];
 }
 
+- (instancetype)takeUntilBlock:(BOOL (^)(id x))predicate {
+  NSCParameterAssert(predicate != nil);
+
+  return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    return [self subscribeNext:^(id x) {
+      if (predicate(x)) {
+        [subscriber sendCompleted];
+      } else {
+        [subscriber sendNext:x];
+      }
+    } error:^(NSError *error) {
+      [subscriber sendError:error];
+    } completed:^{
+      [subscriber sendCompleted];
+    }];
+  }] setNameWithFormat:@"[%@] -takeUntilBlock:", self.name];
+}
+
 @end
 
 @implementation RACSignal (Subscription)
