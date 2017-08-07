@@ -13,6 +13,7 @@
 #import "RACEmptySignal.h"
 #import "RACErrorSignal.h"
 #import "RACMulticastConnection.h"
+#import "NSObject+RACDescription.h"
 #import "RACReplaySubject.h"
 #import "RACReturnSignal.h"
 #import "RACScheduler.h"
@@ -475,6 +476,22 @@
       [subscriber sendCompleted];
     }];
   }] setNameWithFormat:@"[%@] -distinctUntilChanged", self.name];
+}
+
+- (instancetype)scanWithStart:(id)startingValue reduceWithIndex:(id (^)(id, id, NSUInteger))reduceBlock {
+  NSCParameterAssert(reduceBlock != nil);
+
+  return [[RACSignal defer:^RACSignal *{
+    __block id running = startingValue;
+    __block NSUInteger idx = 0;
+
+    return [self map:^id(id value) {
+      running = reduceBlock(running, value, idx);
+      ++idx;
+      return running;
+    }];
+  }] setNameWithFormat:@"[%@] -scanWithStart: %@ reduceWithIndex:", self.name,
+          RACDescription(startingValue)];
 }
 
 @end
