@@ -512,6 +512,28 @@
   }] setNameWithFormat:@"[%@] -takeUntilBlock:", self.name];
 }
 
+- (instancetype)skipUntilBlock:(BOOL (^)(id x))predicate {
+  NSCParameterAssert(predicate != nil);
+
+  return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    __block BOOL skipping = YES;
+
+    return [self subscribeNext:^(id x) {
+      if (skipping) {
+        skipping &= !predicate(x);
+      }
+
+      if (!skipping) {
+        [subscriber sendNext:x];
+      }
+    } error:^(NSError *error) {
+      [subscriber sendError:error];
+    } completed:^{
+      [subscriber sendCompleted];
+    }];
+  }] setNameWithFormat:@"[%@] -skipUntilBlock:", self.name];
+}
+
 @end
 
 @implementation RACSignal (Subscription)
