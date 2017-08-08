@@ -626,7 +626,8 @@ extern const NSInteger RACSignalErrorNoMatchingCase;
 - (RACSignal<NSNumber *> *)any:(BOOL (^)(id _Nullable object))predicateBlock RAC_WARN_UNUSED_RESULT;
 
 /// Sends an [NSNumber numberWithBool:YES] if all the objects the receiving 
-/// signal sends pass `predicateBlock`.
+/// signal sends pass `predicateBlock`. If the reciever errs,
+/// [NSNumber numberWithBool:NO] is sent.
 ///
 /// predicateBlock - cannot be nil.
 - (RACSignal<NSNumber *> *)all:(BOOL (^)(id _Nullable object))predicateBlock RAC_WARN_UNUSED_RESULT;
