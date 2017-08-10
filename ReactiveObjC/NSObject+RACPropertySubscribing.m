@@ -8,6 +8,7 @@
 
 #import "NSObject+RACPropertySubscribing.h"
 #import <ReactiveObjC/EXTScope.h>
+#import <ReactiveObjC/KVObserver.h>
 #import "NSObject+RACDeallocating.h"
 #import "NSObject+RACDescription.h"
 #import "NSObject+RACKVOWrapper.h"
@@ -23,7 +24,8 @@
 
 - (RACSignal *)rac_valuesForKeyPath:(NSString *)keyPath observer:(__weak NSObject *)observer {
 	return [[[self
-		rac_valuesAndChangesForKeyPath:keyPath options:NSKeyValueObservingOptionInitial observer:observer]
+		rac_valuesAndChangesForKeyPath:keyPath options:NSKeyValueObservingOptionInitial |
+																									 NSKeyValueObservingOptionNew observer:observer]
 		map:^(RACTuple *value) {
 			// -map: because it doesn't require the block trampoline that -reduceEach: uses
 			return value[0];
@@ -33,52 +35,71 @@
 
 - (RACSignal *)rac_valuesAndChangesForKeyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options observer:(__weak NSObject *)weakObserver {
 	NSObject *strongObserver = weakObserver;
-	keyPath = [keyPath copy];
 
-	NSRecursiveLock *objectLock = [[NSRecursiveLock alloc] init];
-	objectLock.name = @"org.reactivecocoa.ReactiveObjC.NSObjectRACPropertySubscribing";
+	RACSignal *selfDealloc = self.rac_willDeallocSignal;
+	RACSignal *observerDealloc = strongObserver.rac_willDeallocSignal ?: [RACSignal never];
 
-	__weak NSObject *weakSelf = self;
+	return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+		PMKVObserver *observer = [PMKVObserver
+				observeObject:self observer:weakObserver keyPath:keyPath options:options
+								block:^(id  _Nonnull observer, id  _Nonnull object, NSDictionary<NSKeyValueChangeKey,id> * _Nullable change, PMKVObserver * _Nonnull kvo) {
+									RACTuple *tuple = [RACTwoTuple pack:change[NSKeyValueChangeNewKey] :change];
+									[subscriber sendNext:tuple];
+								}];
 
-	RACSignal *deallocSignal = [[RACSignal
-		zip:@[
-			self.rac_willDeallocSignal,
-			strongObserver.rac_willDeallocSignal ?: [RACSignal never]
-		]]
-		doCompleted:^{
-			// Forces deallocation to wait if the object variables are currently
-			// being read on another thread.
-			[objectLock lock];
-			@onExit {
-				[objectLock unlock];
-			};
+		return [RACDisposable disposableWithBlock:^{
+			[observer cancel];
 		}];
+	}]
+	takeUntil:[RACSignal zip:@[selfDealloc, observerDealloc]]];
 
-	return [[[RACSignal
-		createSignal:^ RACDisposable * (id<RACSubscriber> subscriber) {
-			// Hold onto the lock the whole time we're setting up the KVO
-			// observation, because any resurrection that might be caused by our
-			// retaining below must be balanced out by the time -dealloc returns
-			// (if another thread is waiting on the lock above).
-			[objectLock lock];
-			@onExit {
-				[objectLock unlock];
-			};
-
-			__strong NSObject *observer __attribute__((objc_precise_lifetime)) = weakObserver;
-			__strong NSObject *self __attribute__((objc_precise_lifetime)) = weakSelf;
-
-			if (self == nil) {
-				[subscriber sendCompleted];
-				return nil;
-			}
-
-			return [self rac_observeKeyPath:keyPath options:options observer:observer block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
-				[subscriber sendNext:RACTuplePack(value, change)];
-			}];
-		}]
-		takeUntil:deallocSignal]
-		setNameWithFormat:@"%@ -rac_valueAndChangesForKeyPath: %@ options: %lu observer: %@", RACDescription(self), keyPath, (unsigned long)options, RACDescription(strongObserver)];
+//	NSObject *strongObserver = weakObserver;
+//	keyPath = [keyPath copy];
+//
+//	NSRecursiveLock *objectLock = [[NSRecursiveLock alloc] init];
+//	objectLock.name = @"org.reactivecocoa.ReactiveObjC.NSObjectRACPropertySubscribing";
+//
+//	__weak NSObject *weakSelf = self;
+//
+//	RACSignal *deallocSignal = [[RACSignal
+//		zip:@[
+//			self.rac_willDeallocSignal,
+//			strongObserver.rac_willDeallocSignal ?: [RACSignal never]
+//		]]
+//		doCompleted:^{
+//			// Forces deallocation to wait if the object variables are currently
+//			// being read on another thread.
+//			[objectLock lock];
+//			@onExit {
+//				[objectLock unlock];
+//			};
+//		}];
+//
+//	return [[[RACSignal
+//		createSignal:^ RACDisposable * (id<RACSubscriber> subscriber) {
+//			// Hold onto the lock the whole time we're setting up the KVO
+//			// observation, because any resurrection that might be caused by our
+//			// retaining below must be balanced out by the time -dealloc returns
+//			// (if another thread is waiting on the lock above).
+//			[objectLock lock];
+//			@onExit {
+//				[objectLock unlock];
+//			};
+//
+//			__strong NSObject *observer __attribute__((objc_precise_lifetime)) = weakObserver;
+//			__strong NSObject *self __attribute__((objc_precise_lifetime)) = weakSelf;
+//
+//			if (self == nil) {
+//				[subscriber sendCompleted];
+//				return nil;
+//			}
+//
+//			return [self rac_observeKeyPath:keyPath options:options observer:observer block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
+//				[subscriber sendNext:RACTuplePack(value, change)];
+//			}];
+//		}]
+//		takeUntil:deallocSignal]
+//		setNameWithFormat:@"%@ -rac_valueAndChangesForKeyPath: %@ options: %lu observer: %@", RACDescription(self), keyPath, (unsigned long)options, RACDescription(strongObserver)];
 }
 
 @end
