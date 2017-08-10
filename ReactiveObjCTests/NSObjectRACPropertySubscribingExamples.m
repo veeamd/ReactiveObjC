@@ -197,7 +197,7 @@ QuickConfigurationBegin(NSObjectRACPropertySubscribingExamples)
 				proxySet = [object mutableOrderedSetValueForKey:keyPath];
 			});
 
-			qck_fit(@"sends the newest object when inserting values into an observed object", ^{
+			qck_it(@"sends the newest object when inserting values into an observed object", ^{
 				NSMutableOrderedSet *expected = [NSMutableOrderedSet orderedSetWithObjects: @1, @2, nil];
 
 				[proxySet addObject:@2];
