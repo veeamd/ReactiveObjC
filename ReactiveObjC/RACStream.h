@@ -162,6 +162,11 @@ typedef RACStream * _Nullable (^RACStreamBindBlock)(ValueType _Nullable value, B
 /// to `value`.
 - (__kindof RACStream<ValueType> *)ignore:(nullable ValueType)value;
 
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Wstrict-prototypes\"") \
+typedef id _Nullable (^RACReduceBlock)();
+_Pragma("clang diagnostic pop")
+
 /// Unpacks each RACTuple in the receiver and maps the values to a new value.
 ///
 /// reduceBlock - The block which reduces each RACTuple's values into one value.
@@ -170,7 +175,7 @@ typedef RACStream * _Nullable (^RACStreamBindBlock)(ValueType _Nullable value, B
 ///               return value must be an object. This argument cannot be nil.
 ///
 /// Returns a new stream of reduced tuple values.
-- (__kindof RACStream *)reduceEach:(id _Nullable (^)())reduceBlock;
+- (__kindof RACStream *)reduceEach:(RACReduceBlock)reduceBlock;
 
 /// Returns a stream consisting of `value`, followed by the values in the
 /// receiver.
@@ -221,7 +226,7 @@ typedef RACStream * _Nullable (^RACStreamBindBlock)(ValueType _Nullable value, B
 ///
 /// Returns a new stream containing the results from each invocation of
 /// `reduceBlock`.
-+ (__kindof RACStream<ValueType> *)zip:(id<NSFastEnumeration>)streams reduce:(id _Nullable (^)())reduceBlock;
++ (__kindof RACStream<ValueType> *)zip:(id<NSFastEnumeration>)streams reduce:(RACReduceBlock)reduceBlock;
 
 /// Returns a stream obtained by concatenating `streams` in order.
 + (__kindof RACStream<ValueType> *)concat:(id<NSFastEnumeration>)streams;
