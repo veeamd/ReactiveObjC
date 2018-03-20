@@ -188,50 +188,52 @@ static RACSignal *NSObjectRACSignalForSelector(NSObject *self, SEL selector, Pro
 			[subject sendCompleted];
 		}]];
 
-		Method targetMethod = class_getInstanceMethod(class, selector);
-		if (targetMethod == NULL) {
-			const char *typeEncoding;
-			if (protocol == NULL) {
-				typeEncoding = RACSignatureForUndefinedSelector(selector);
-			} else {
-				// Look for the selector as an optional instance method.
-				struct objc_method_description methodDescription = protocol_getMethodDescription(protocol, selector, NO, YES);
+		@synchronized (class) {
+			Method targetMethod = class_getInstanceMethod(class, selector);
+			if (targetMethod == NULL) {
+				const char *typeEncoding;
+				if (protocol == NULL) {
+					typeEncoding = RACSignatureForUndefinedSelector(selector);
+				} else {
+					// Look for the selector as an optional instance method.
+					struct objc_method_description methodDescription = protocol_getMethodDescription(protocol, selector, NO, YES);
 
-				if (methodDescription.name == NULL) {
-					// Then fall back to looking for a required instance
-					// method.
-					methodDescription = protocol_getMethodDescription(protocol, selector, YES, YES);
-					NSCAssert(methodDescription.name != NULL, @"Selector %@ does not exist in <%s>", NSStringFromSelector(selector), protocol_getName(protocol));
+					if (methodDescription.name == NULL) {
+						// Then fall back to looking for a required instance
+						// method.
+						methodDescription = protocol_getMethodDescription(protocol, selector, YES, YES);
+						NSCAssert(methodDescription.name != NULL, @"Selector %@ does not exist in <%s>", NSStringFromSelector(selector), protocol_getName(protocol));
+					}
+
+					typeEncoding = methodDescription.types;
 				}
 
-				typeEncoding = methodDescription.types;
+				RACCheckTypeEncoding(typeEncoding);
+
+				// Define the selector to call -forwardInvocation:.
+				if (!class_addMethod(class, selector, _objc_msgForward, typeEncoding)) {
+					NSDictionary *userInfo = @{
+						NSLocalizedDescriptionKey: [NSString stringWithFormat:NSLocalizedString(@"A race condition occurred implementing %@ on class %@", nil), NSStringFromSelector(selector), class],
+						NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Invoke -rac_signalForSelector: again to override the implementation.", nil)
+					};
+
+					return [RACSignal error:[NSError errorWithDomain:RACSelectorSignalErrorDomain code:RACSelectorSignalErrorMethodSwizzlingRace userInfo:userInfo]];
+				}
+			} else if (method_getImplementation(targetMethod) != _objc_msgForward) {
+				// Make a method alias for the existing method implementation.
+				const char *typeEncoding = method_getTypeEncoding(targetMethod);
+
+				RACCheckTypeEncoding(typeEncoding);
+
+				BOOL addedAlias __attribute__((unused)) = class_addMethod(class, aliasSelector, method_getImplementation(targetMethod), typeEncoding);
+				NSCAssert(addedAlias, @"Original implementation for %@ is already copied to %@ on %@", NSStringFromSelector(selector), NSStringFromSelector(aliasSelector), class);
+
+				// Redefine the selector to call -forwardInvocation:.
+				class_replaceMethod(class, selector, _objc_msgForward, method_getTypeEncoding(targetMethod));
 			}
 
-			RACCheckTypeEncoding(typeEncoding);
-
-			// Define the selector to call -forwardInvocation:.
-			if (!class_addMethod(class, selector, _objc_msgForward, typeEncoding)) {
-				NSDictionary *userInfo = @{
-					NSLocalizedDescriptionKey: [NSString stringWithFormat:NSLocalizedString(@"A race condition occurred implementing %@ on class %@", nil), NSStringFromSelector(selector), class],
-					NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Invoke -rac_signalForSelector: again to override the implementation.", nil)
-				};
-
-				return [RACSignal error:[NSError errorWithDomain:RACSelectorSignalErrorDomain code:RACSelectorSignalErrorMethodSwizzlingRace userInfo:userInfo]];
-			}
-		} else if (method_getImplementation(targetMethod) != _objc_msgForward) {
-			// Make a method alias for the existing method implementation.
-			const char *typeEncoding = method_getTypeEncoding(targetMethod);
-
-			RACCheckTypeEncoding(typeEncoding);
-
-			BOOL addedAlias __attribute__((unused)) = class_addMethod(class, aliasSelector, method_getImplementation(targetMethod), typeEncoding);
-			NSCAssert(addedAlias, @"Original implementation for %@ is already copied to %@ on %@", NSStringFromSelector(selector), NSStringFromSelector(aliasSelector), class);
-
-			// Redefine the selector to call -forwardInvocation:.
-			class_replaceMethod(class, selector, _objc_msgForward, method_getTypeEncoding(targetMethod));
+			return subject;
 		}
-
-		return subject;
 	}
 }
 
@@ -261,7 +263,7 @@ static Class RACSwizzleClass(NSObject *self) {
 	// been swizzled, so that even if something else swizzles the class of
 	// this instance, we can still access the RAC generated subclass.
 	Class knownDynamicSubclass = objc_getAssociatedObject(self, RACSubclassAssociationKey);
-	if (knownDynamicSubclass != Nil) return knownDynamicSubclass;
+	if (knownDynamicSubclass != nil) return knownDynamicSubclass;
 
 	NSString *className = NSStringFromClass(baseClass);
 
@@ -290,27 +292,29 @@ static Class RACSwizzleClass(NSObject *self) {
 		return baseClass;
 	}
 
-	const char *subclassName = [className stringByAppendingString:RACSubclassSuffix].UTF8String;
-	Class subclass = objc_getClass(subclassName);
+	@synchronized (baseClass) {
+		const char *subclassName = [className stringByAppendingString:RACSubclassSuffix].UTF8String;
+		Class subclass = objc_getClass(subclassName);
 
-	if (subclass == nil) {
-		subclass = objc_allocateClassPair(baseClass, subclassName, 0);
-		if (subclass == nil) return nil;
+		if (subclass == nil) {
+			subclass = objc_allocateClassPair(baseClass, subclassName, 0);
+			if (subclass == nil) return nil;
 
-		RACSwizzleForwardInvocation(subclass);
-		RACSwizzleRespondsToSelector(subclass);
+			RACSwizzleForwardInvocation(subclass);
+			RACSwizzleRespondsToSelector(subclass);
 
-		RACSwizzleGetClass(subclass, statedClass);
-		RACSwizzleGetClass(object_getClass(subclass), statedClass);
+			RACSwizzleGetClass(subclass, statedClass);
+			RACSwizzleGetClass(object_getClass(subclass), statedClass);
 
-		RACSwizzleMethodSignatureForSelector(subclass);
+			RACSwizzleMethodSignatureForSelector(subclass);
 
-		objc_registerClassPair(subclass);
+			objc_registerClassPair(subclass);
+		}
+
+		object_setClass(self, subclass);
+		objc_setAssociatedObject(self, RACSubclassAssociationKey, subclass, OBJC_ASSOCIATION_ASSIGN);
+		return subclass;
 	}
-
-	object_setClass(self, subclass);
-	objc_setAssociatedObject(self, RACSubclassAssociationKey, subclass, OBJC_ASSOCIATION_ASSIGN);
-	return subclass;
 }
 
 - (RACSignal *)rac_signalForSelector:(SEL)selector {
