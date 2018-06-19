@@ -1,7 +1,0 @@
-machine:
-  xcode:
-    version: 9.0
-
-checkout:
-  post:
-    - git submodule update --init --recursive
