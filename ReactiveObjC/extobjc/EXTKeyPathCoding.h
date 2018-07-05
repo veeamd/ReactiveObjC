@@ -7,9 +7,6 @@
 //  Released under the MIT license.
 //
 
-#ifndef EXTC_KEYPATHCODING_H
-#define EXTC_KEYPATHCODING_H
-
 #import <Foundation/Foundation.h>
 #import "metamacros.h"
 
@@ -68,5 +65,3 @@ NSString *lowercaseStringPath = @rac_keypath(NSString.new, lowercaseString);
 #define rac_collectionKeypath3(PATH, COLLECTION_OBJECT, COLLECTION_PATH) ([[NSString stringWithFormat:@"%s.%s",keypath(PATH), keypath(COLLECTION_OBJECT, COLLECTION_PATH)] UTF8String])
 
 #define rac_collectionKeypath4(OBJ, PATH, COLLECTION_OBJECT, COLLECTION_PATH) ([[NSString stringWithFormat:@"%s.%s",keypath(OBJ, PATH), keypath(COLLECTION_OBJECT, COLLECTION_PATH)] UTF8String])
-
-#endif
