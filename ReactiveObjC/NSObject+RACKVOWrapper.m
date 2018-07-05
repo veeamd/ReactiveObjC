@@ -48,7 +48,7 @@
 	if (property != NULL) {
 		rac_propertyAttributes *attributes = rac_copyPropertyAttributes(property);
 		if (attributes != NULL) {
-			@onExit {
+			@rac_onExit {
 				free(attributes);
 			};
 

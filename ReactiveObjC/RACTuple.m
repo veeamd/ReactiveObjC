@@ -97,13 +97,13 @@
 - (instancetype)initWithCoder:(NSCoder *)coder {
 	self = [self init];
 	
-	_backingArray = [coder decodeObjectForKey:@keypath(self.backingArray)];
+	_backingArray = [coder decodeObjectForKey:@rac_keypath(self.backingArray)];
 
 	return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {
-	if (self.backingArray != nil) [coder encodeObject:self.backingArray forKey:@keypath(self.backingArray)];
+	if (self.backingArray != nil) [coder encodeObject:self.backingArray forKey:@rac_keypath(self.backingArray)];
 }
 
 #pragma mark API

@@ -167,12 +167,12 @@ static void RACReleaseScheduledAction(CFAllocatorRef allocator, const void *ptr)
 
 	RACCompoundDisposable *compoundDisposable = [RACCompoundDisposable compoundDisposable];
 
-	@weakify(self);
+	@rac_weakify(self);
 	@synchronized (self) {
 		__block RACDisposable *thisDisposable = nil;
 
 		void (^reschedulingBlock)(void) = ^{
-			@strongify(self);
+			@rac_strongify(self);
 
 			[compoundDisposable removeDisposable:thisDisposable];
 

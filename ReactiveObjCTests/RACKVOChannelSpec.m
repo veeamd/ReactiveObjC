@@ -32,7 +32,7 @@ qck_describe(@"RACKVOChannel", ^{
 	
 	qck_beforeEach(^{
 		object = [[RACTestObject alloc] init];
-		channel = [[RACKVOChannel alloc] initWithTarget:object keyPath:@keypath(object.stringValue) nilValue:nil];
+		channel = [[RACKVOChannel alloc] initWithTarget:object keyPath:@rac_keypath(object.stringValue) nilValue:nil];
 	});
 	
 	id setupBlock = ^(RACTestObject *testObject, NSString *keyPath, id nilValue, RACSignal *signal) {
@@ -47,7 +47,7 @@ qck_describe(@"RACKVOChannel", ^{
 	qck_itBehavesLike(RACChannelExamples, ^{
 		return @{
 			RACChannelExampleCreateBlock: [^{
-				return [[RACKVOChannel alloc] initWithTarget:object keyPath:@keypath(object.stringValue) nilValue:nil];
+				return [[RACKVOChannel alloc] initWithTarget:object keyPath:@rac_keypath(object.stringValue) nilValue:nil];
 			} copy]
 		};
 	});
@@ -93,7 +93,7 @@ qck_describe(@"RACKVOChannel", ^{
 	
 	qck_it(@"should be able to subscribe to signals", ^{
 		NSMutableArray *receivedValues = [NSMutableArray array];
-		[object rac_observeKeyPath:@keypath(object.stringValue) options:0 observer:self block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
+		[object rac_observeKeyPath:@rac_keypath(object.stringValue) options:0 observer:self block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
 			[receivedValues addObject:value];
 		}];
 
@@ -119,7 +119,7 @@ qck_describe(@"RACKVOChannel", ^{
 				deallocated = YES;
 			}]];
 
-			RACKVOChannel *channel = [[RACKVOChannel alloc] initWithTarget:object keyPath:@keypath(object.stringValue) nilValue:nil];
+			RACKVOChannel *channel = [[RACKVOChannel alloc] initWithTarget:object keyPath:@rac_keypath(object.stringValue) nilValue:nil];
 			[channel.leadingTerminal subscribeCompleted:^{
 				leadingCompleted = YES;
 			}];
@@ -148,7 +148,7 @@ qck_describe(@"RACKVOChannel", ^{
 				targetDeallocated = YES;
 			}]];
 
-			RACKVOChannel *channel = [[RACKVOChannel alloc] initWithTarget:object keyPath:@keypath(object.stringValue) nilValue:nil];
+			RACKVOChannel *channel = [[RACKVOChannel alloc] initWithTarget:object keyPath:@rac_keypath(object.stringValue) nilValue:nil];
 			[channel.rac_deallocDisposable addDisposable:[RACDisposable disposableWithBlock:^{
 				channelDeallocated = YES;
 			}]];
@@ -292,7 +292,7 @@ qck_describe(@"RACChannelTo", ^{
 		b.arrayValue = @[];
 		RACChannelTo(a, arrayValue) = RACChannelTo(b, arrayValue);
 
-		[[b mutableArrayValueForKeyPath:@keypath(b.arrayValue)] addObject:@1];
+		[[b mutableArrayValueForKeyPath:@rac_keypath(b.arrayValue)] addObject:@1];
 		expect(a.arrayValue).to(equal(b.arrayValue));
 	});
 	
@@ -300,7 +300,7 @@ qck_describe(@"RACChannelTo", ^{
 		b.setValue = [NSSet set];
 		RACChannelTo(a, setValue) = RACChannelTo(b, setValue);
 
-		[[b mutableSetValueForKeyPath:@keypath(b.setValue)] addObject:@1];
+		[[b mutableSetValueForKeyPath:@rac_keypath(b.setValue)] addObject:@1];
 		expect(a.setValue).to(equal(b.setValue));
 	});
 	
@@ -308,7 +308,7 @@ qck_describe(@"RACChannelTo", ^{
 		b.orderedSetValue = [NSOrderedSet orderedSet];
 		RACChannelTo(a, orderedSetValue) = RACChannelTo(b, orderedSetValue);
 
-		[[b mutableOrderedSetValueForKeyPath:@keypath(b.orderedSetValue)] addObject:@1];
+		[[b mutableOrderedSetValueForKeyPath:@rac_keypath(b.orderedSetValue)] addObject:@1];
 		expect(a.orderedSetValue).to(equal(b.orderedSetValue));
 	});
 	

@@ -53,12 +53,12 @@
 }
 
 - (instancetype)initWithCoder:(NSCoder *)coder {
-	id value = [coder decodeObjectForKey:@keypath(self.head)];
+	id value = [coder decodeObjectForKey:@rac_keypath(self.head)];
 	return [self.class return:value];
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {
-	if (self.head != nil) [coder encodeObject:self.head forKey:@keypath(self.head)];
+	if (self.head != nil) [coder encodeObject:self.head forKey:@rac_keypath(self.head)];
 }
 
 #pragma mark NSObject

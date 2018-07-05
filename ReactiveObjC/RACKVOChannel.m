@@ -137,10 +137,10 @@ static NSString * const RACKVOChannelDataDictionaryKey = @"RACKVOChannelKey";
 
 	// Capture `self` weakly for the target's deallocation disposable, so we can
 	// freely deallocate if we complete before then.
-	@weakify(self);
+	@rac_weakify(self);
 
 	[strongTarget.rac_deallocDisposable addDisposable:[RACDisposable disposableWithBlock:^{
-		@strongify(self);
+		@rac_strongify(self);
 		[self.leadingTerminal sendCompleted];
 		self.target = nil;
 	}]];

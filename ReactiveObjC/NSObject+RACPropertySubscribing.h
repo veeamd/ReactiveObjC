@@ -16,10 +16,10 @@
 /// deallocated. If any intermediate object is deallocated instead, it will be
 /// assumed to have been set to nil.
 ///
-/// Make sure to `@strongify(self)` when using this macro within a block! The
+/// Make sure to `@rac_strongify(self)` when using this macro within a block! The
 /// macro will _always_ reference `self`, which can silently introduce a retain
 /// cycle within a block. As a result, you should make sure that `self` is a weak
-/// reference (e.g., created by `@weakify` and `@strongify`) before the
+/// reference (e.g., created by `@rac_weakify` and `@rac_strongify`) before the
 /// expression that uses `RACObserve`.
 ///
 /// Examples
@@ -35,11 +35,11 @@
 ///    // controller is deallocated.
 ///    RACSignal *signal2 = RACObserve(obj.arrayController, items);
 ///
-///    @weakify(self);
+///    @rac_weakify(self);
 ///    RACSignal *signal3 = [anotherSignal flattenMap:^(NSArrayController *arrayController) {
 ///        // Avoids a retain cycle because of RACObserve implicitly referencing
 ///        // self.
-///        @strongify(self);
+///        @rac_strongify(self);
 ///        return RACObserve(arrayController, items);
 ///    }];
 ///
@@ -49,7 +49,7 @@
 #define _RACObserve(TARGET, KEYPATH) \
 ({ \
 	__weak id target_ = (TARGET); \
-	[target_ rac_valuesForKeyPath:@keypath(TARGET, KEYPATH) observer:self]; \
+	[target_ rac_valuesForKeyPath:@rac_keypath(TARGET, KEYPATH) observer:self]; \
 })
 
 #if __clang__ && (__clang_major__ >= 8)
@@ -110,11 +110,11 @@ NS_ASSUME_NONNULL_END
 		(_RACAbleObject(self, __VA_ARGS__)) \
 		(_RACAbleObject(__VA_ARGS__))
 
-#define _RACAbleObject(object, property) [object rac_signalForKeyPath:@keypath(object, property) observer:self]
+#define _RACAbleObject(object, property) [object rac_signalForKeyPath:@rac_keypath(object, property) observer:self]
 
 #define RACAbleWithStart(...) \
 	metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__)) \
 		(_RACAbleWithStartObject(self, __VA_ARGS__)) \
 		(_RACAbleWithStartObject(__VA_ARGS__))
 
-#define _RACAbleWithStartObject(object, property) [object rac_signalWithStartingValueForKeyPath:@keypath(object, property) observer:self]
+#define _RACAbleWithStartObject(object, property) [object rac_signalWithStartingValueForKeyPath:@rac_keypath(object, property) observer:self]

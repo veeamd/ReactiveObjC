@@ -34,7 +34,7 @@ QuickConfigurationBegin(NSObjectRACPropertySubscribingExamples)
 
 		qck_it(@"should send the current value once on subscription", ^{
 			RACTestObject *object = [[RACTestObject alloc] init];
-			RACSignal *signal = signalBlock(object, @keypath(object, objectValue), self);
+			RACSignal *signal = signalBlock(object, @rac_keypath(object, objectValue), self);
 			NSMutableArray *values = [NSMutableArray array];
 
 			object.objectValue = @0;
@@ -47,7 +47,7 @@ QuickConfigurationBegin(NSObjectRACPropertySubscribingExamples)
 
 		qck_it(@"should send the new value when it changes", ^{
 			RACTestObject *object = [[RACTestObject alloc] init];
-			RACSignal *signal = signalBlock(object, @keypath(object, objectValue), self);
+			RACSignal *signal = signalBlock(object, @rac_keypath(object, objectValue), self);
 			NSMutableArray *values = [NSMutableArray array];
 
 			object.objectValue = @0;
@@ -64,7 +64,7 @@ QuickConfigurationBegin(NSObjectRACPropertySubscribingExamples)
 
 		qck_it(@"should stop observing when disposed", ^{
 			RACTestObject *object = [[RACTestObject alloc] init];
-			RACSignal *signal = signalBlock(object, @keypath(object, objectValue), self);
+			RACSignal *signal = signalBlock(object, @rac_keypath(object, objectValue), self);
 			NSMutableArray *values = [NSMutableArray array];
 
 			object.objectValue = @0;
@@ -91,7 +91,7 @@ QuickConfigurationBegin(NSObjectRACPropertySubscribingExamples)
 					observerDealloced = YES;
 				}]];
 
-				RACSignal *signal = signalBlock(object, @keypath(object, objectValue), observer);
+				RACSignal *signal = signalBlock(object, @rac_keypath(object, objectValue), observer);
 				object.objectValue = @1;
 				[signal subscribeNext:^(id x) {
 					[values addObject:x];
@@ -120,7 +120,7 @@ QuickConfigurationBegin(NSObjectRACPropertySubscribingExamples)
 					scopeObjectDealloced = YES;
 				}]];
 
-				RACSignal *signal = signalBlock(object, @keypath(object, objectValue), scopeObject);
+				RACSignal *signal = signalBlock(object, @rac_keypath(object, objectValue), scopeObject);
 
 				[signal subscribeNext:^(id _) {
 
@@ -140,7 +140,7 @@ QuickConfigurationBegin(NSObjectRACPropertySubscribingExamples)
 					objectDealloced = YES;
 				}]];
 
-				RACSignal *signal = [signalBlock(object, @keypath(object, objectValue), self) map:^(id value) {
+				RACSignal *signal = [signalBlock(object, @rac_keypath(object, objectValue), self) map:^(id value) {
 					return value;
 				}];
 
@@ -162,7 +162,7 @@ QuickConfigurationBegin(NSObjectRACPropertySubscribingExamples)
 			@autoreleasepool {
 				RACTestObject *object __attribute__((objc_precise_lifetime)) = [[RACTestObject alloc] init];
 
-				RACSignal *signal = signalBlock(object, @keypath(object, objectValue), self);
+				RACSignal *signal = signalBlock(object, @rac_keypath(object, objectValue), self);
 
 				[signal subscribeNext:^(id x) {
 					value = x;
@@ -188,7 +188,7 @@ QuickConfigurationBegin(NSObjectRACPropertySubscribingExamples)
 				object = [[RACTestObject alloc] init];
 				object.objectValue = [NSMutableOrderedSet orderedSetWithObject:@1];
 
-				NSString *keyPath = @keypath(object, objectValue);
+				NSString *keyPath = @rac_keypath(object, objectValue);
 
 				[signalBlock(object, keyPath, self) subscribeNext:^(NSMutableOrderedSet *x) {
 					lastValue = x;

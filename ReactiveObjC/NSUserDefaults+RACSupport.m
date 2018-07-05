@@ -24,11 +24,11 @@
 	RACScheduler *scheduler = [RACScheduler scheduler];
 	__block BOOL ignoreNextValue = NO;
 	
-	@weakify(self);
+	@rac_weakify(self);
 	[[[[[[[NSNotificationCenter.defaultCenter
 		rac_addObserverForName:NSUserDefaultsDidChangeNotification object:self]
 		map:^(id _) {
-			@strongify(self);
+			@rac_strongify(self);
 			return [self objectForKey:key];
 		}]
 		startWith:[self objectForKey:key]]
@@ -47,7 +47,7 @@
 	[[channel.leadingTerminal
 		deliverOn:scheduler]
 		subscribeNext:^(id value) {
-			@strongify(self);
+			@rac_strongify(self);
 			ignoreNextValue = YES;
 			[self setObject:value forKey:key];
 		}];

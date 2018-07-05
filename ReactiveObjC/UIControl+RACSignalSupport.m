@@ -18,11 +18,11 @@
 @implementation UIControl (RACSignalSupport)
 
 - (RACSignal *)rac_signalForControlEvents:(UIControlEvents)controlEvents {
-	@weakify(self);
+	@rac_weakify(self);
 
 	return [[RACSignal
 		createSignal:^(id<RACSubscriber> subscriber) {
-			@strongify(self);
+			@rac_strongify(self);
 
 			[self addTarget:subscriber action:@selector(sendNext:) forControlEvents:controlEvents];
 
@@ -32,7 +32,7 @@
 			[self.rac_deallocDisposable addDisposable:disposable];
 
 			return [RACDisposable disposableWithBlock:^{
-				@strongify(self);
+				@rac_strongify(self);
 				[self.rac_deallocDisposable removeDisposable:disposable];
 				[self removeTarget:subscriber action:@selector(sendNext:) forControlEvents:controlEvents];
 			}];

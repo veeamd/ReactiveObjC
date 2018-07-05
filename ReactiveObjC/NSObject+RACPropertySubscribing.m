@@ -49,7 +49,7 @@
 			// Forces deallocation to wait if the object variables are currently
 			// being read on another thread.
 			[objectLock lock];
-			@onExit {
+			@rac_onExit {
 				[objectLock unlock];
 			};
 		}];
@@ -61,7 +61,7 @@
 			// retaining below must be balanced out by the time -dealloc returns
 			// (if another thread is waiting on the lock above).
 			[objectLock lock];
-			@onExit {
+			@rac_onExit {
 				[objectLock unlock];
 			};
 

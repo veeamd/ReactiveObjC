@@ -16,10 +16,10 @@
 @implementation NSControl (RACTextSignalSupport)
 
 - (RACSignal *)rac_textSignal {
-	@weakify(self);
+	@rac_weakify(self);
 	return [[[[RACSignal
 		createSignal:^(id<RACSubscriber> subscriber) {
-			@strongify(self);
+			@rac_strongify(self);
 			id observer = [NSNotificationCenter.defaultCenter addObserverForName:NSControlTextDidChangeNotification object:self queue:nil usingBlock:^(NSNotification *note) {
 				[subscriber sendNext:note.object];
 			}];

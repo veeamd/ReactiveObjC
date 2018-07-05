@@ -31,7 +31,7 @@ static void *UIButtonEnabledDisposableKey = &UIButtonEnabledDisposableKey;
 	
 	if (command == nil) return;
 	
-	disposable = [command.enabled setKeyPath:@keypath(self.enabled) onObject:self];
+	disposable = [command.enabled setKeyPath:@rac_keypath(self.enabled) onObject:self];
 	objc_setAssociatedObject(self, UIButtonEnabledDisposableKey, disposable, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 	
 	[self rac_hijackActionAndTargetIfNeeded];

@@ -35,10 +35,10 @@ static void RACUseDelegateProxy(UITextView *self) {
 }
 
 - (RACSignal *)rac_textSignal {
-	@weakify(self);
+	@rac_weakify(self);
 	RACSignal *signal = [[[[[RACSignal
 		defer:^{
-			@strongify(self);
+			@rac_strongify(self);
 			return [RACSignal return:RACTuplePack(self)];
 		}]
 		concat:[self.rac_delegateProxy signalForSelector:@selector(textViewDidChange:)]]
