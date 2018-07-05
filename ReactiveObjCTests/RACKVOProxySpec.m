@@ -49,11 +49,11 @@
 // Use manual KVO notifications to avoid any possible race conditions within the
 // automatic KVO implementation.
 - (void)setTestInt:(int)value {
-	[self willChangeValueForKey:@keypath(self.testInt)];
+	[self willChangeValueForKey:@rac_keypath(self.testInt)];
 	pthread_mutex_lock(&_mutex);
 	_testInt = value;
 	pthread_mutex_unlock(&_mutex);
-	[self didChangeValueForKey:@keypath(self.testInt)];
+	[self didChangeValueForKey:@rac_keypath(self.testInt)];
 }
 
 + (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key {

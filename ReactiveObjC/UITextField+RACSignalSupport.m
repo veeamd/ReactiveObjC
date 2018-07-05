@@ -18,10 +18,10 @@
 @implementation UITextField (RACSignalSupport)
 
 - (RACSignal *)rac_textSignal {
-	@weakify(self);
+	@rac_weakify(self);
 	return [[[[[RACSignal
 		defer:^{
-			@strongify(self);
+			@rac_strongify(self);
 			return [RACSignal return:self];
 		}]
 		concat:[self rac_signalForControlEvents:UIControlEventAllEditingEvents]]
@@ -33,7 +33,7 @@
 }
 
 - (RACChannelTerminal *)rac_newTextChannel {
-	return [self rac_channelForControlEvents:UIControlEventAllEditingEvents key:@keypath(self.text) nilValue:@""];
+	return [self rac_channelForControlEvents:UIControlEventAllEditingEvents key:@rac_keypath(self.text) nilValue:@""];
 }
 
 @end

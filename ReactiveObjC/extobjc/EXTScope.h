@@ -13,7 +13,7 @@
 #import "metamacros.h"
 
 /**
- * \@onExit defines some code to be executed when the current scope exits. The
+ * \@rac_onExit defines some code to be executed when the current scope exits. The
  * code must be enclosed in braces and terminated with a semicolon, and will be
  * executed regardless of how the scope is exited, including from exceptions,
  * \c goto, \c return, \c break, and \c continue.
@@ -23,15 +23,15 @@
  * the code is used within a block, \c return is a legal (though perhaps
  * confusing) way to exit the cleanup block early.
  *
- * Multiple \@onExit statements in the same scope are executed in reverse
- * lexical order. This helps when pairing resource acquisition with \@onExit
+ * Multiple \@rac_onExit statements in the same scope are executed in reverse
+ * lexical order. This helps when pairing resource acquisition with \@rac_onExit
  * statements, as it guarantees teardown in the opposite order of acquisition.
  *
  * @note This statement cannot be used within scopes defined without braces
- * (like a one line \c if). In practice, this is not an issue, since \@onExit is
+ * (like a one line \c if). In practice, this is not an issue, since \@rac_onExit is
  * a useless construct in such a case anyways.
  */
-#define onExit \
+#define rac_onExit \
     rac_keywordify \
     __strong rac_cleanupBlock_t metamacro_concat(rac_exitBlock_, __LINE__) __attribute__((cleanup(rac_executeCleanupBlock), unused)) = ^
 
@@ -45,7 +45,7 @@
  *
  * See #strongify for an example of usage.
  */
-#define weakify(...) \
+#define rac_weakify(...) \
     rac_keywordify \
     metamacro_foreach_cxt(rac_weakify_,, __weak, __VA_ARGS__)
 
@@ -53,7 +53,7 @@
  * Like #weakify, but uses \c __unsafe_unretained instead, for targets or
  * classes that do not support weak references.
  */
-#define unsafeify(...) \
+#define rac_unsafeify(...) \
     rac_keywordify \
     metamacro_foreach_cxt(rac_weakify_,, __unsafe_unretained, __VA_ARGS__)
 
@@ -70,20 +70,20 @@
     id foo = [[NSObject alloc] init];
     id bar = [[NSObject alloc] init];
 
-    @weakify(foo, bar);
+    @rac_weakify(foo, bar);
 
     // this block will not keep 'foo' or 'bar' alive
     BOOL (^matchesFooOrBar)(id) = ^ BOOL (id obj){
         // but now, upon entry, 'foo' and 'bar' will stay alive until the block has
         // finished executing
-        @strongify(foo, bar);
+        @rac_strongify(foo, bar);
 
         return [foo isEqual:obj] || [bar isEqual:obj];
     };
 
  * @endcode
  */
-#define strongify(...) \
+#define rac_strongify(...) \
     rac_keywordify \
     _Pragma("clang diagnostic push") \
     _Pragma("clang diagnostic ignored \"-Wshadow\"") \

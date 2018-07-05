@@ -24,7 +24,7 @@ qck_itBehavesLike(RACViewChannelExamples, ^{
 		RACViewChannelExampleCreateTerminalBlock: ^(NSSlider *view) {
 			return [view rac_channelToBinding:NSValueBinding];
 		},
-		RACViewChannelExampleKeyPath: @keypath(NSSlider.new, objectValue),
+		RACViewChannelExampleKeyPath: @rac_keypath(NSSlider.new, objectValue),
 		RACViewChannelExampleSetViewValueBlock: ^(NSSlider *view, NSNumber *value) {
 			view.objectValue = value;
 

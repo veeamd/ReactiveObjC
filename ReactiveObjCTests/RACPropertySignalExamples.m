@@ -36,7 +36,7 @@ QuickConfigurationBegin(RACPropertySignalExampleGroups)
 
 		qck_it(@"should set the value of the property with the latest value from the signal", ^{
 			RACSubject *subject = [RACSubject subject];
-			setupBlock(testObject, @keypath(testObject.objectValue), nil, subject);
+			setupBlock(testObject, @rac_keypath(testObject.objectValue), nil, subject);
 			expect(testObject.objectValue).to(beNil());
 
 			[subject sendNext:@1];
@@ -51,7 +51,7 @@ QuickConfigurationBegin(RACPropertySignalExampleGroups)
 
 		qck_it(@"should set the given nilValue for an object property", ^{
 			RACSubject *subject = [RACSubject subject];
-			setupBlock(testObject, @keypath(testObject.objectValue), @"foo", subject);
+			setupBlock(testObject, @rac_keypath(testObject.objectValue), @"foo", subject);
 			expect(testObject.objectValue).to(beNil());
 
 			[subject sendNext:@1];
@@ -66,7 +66,7 @@ QuickConfigurationBegin(RACPropertySignalExampleGroups)
 
 		qck_it(@"should leave the value of the property alone after the signal completes", ^{
 			RACSubject *subject = [RACSubject subject];
-			setupBlock(testObject, @keypath(testObject.objectValue), nil, subject);
+			setupBlock(testObject, @rac_keypath(testObject.objectValue), nil, subject);
 			expect(testObject.objectValue).to(beNil());
 
 			[subject sendNext:@1];
@@ -78,7 +78,7 @@ QuickConfigurationBegin(RACPropertySignalExampleGroups)
 
 		qck_it(@"should set the value of a non-object property with the latest value from the signal", ^{
 			RACSubject *subject = [RACSubject subject];
-			setupBlock(testObject, @keypath(testObject.integerValue), nil, subject);
+			setupBlock(testObject, @rac_keypath(testObject.integerValue), nil, subject);
 			expect(@(testObject.integerValue)).to(equal(@0));
 
 			[subject sendNext:@1];
@@ -93,7 +93,7 @@ QuickConfigurationBegin(RACPropertySignalExampleGroups)
 
 		qck_it(@"should set the given nilValue for a non-object property", ^{
 			RACSubject *subject = [RACSubject subject];
-			setupBlock(testObject, @keypath(testObject.integerValue), @42, subject);
+			setupBlock(testObject, @rac_keypath(testObject.integerValue), @42, subject);
 			expect(@(testObject.integerValue)).to(equal(@0));
 
 			[subject sendNext:@1];
@@ -108,7 +108,7 @@ QuickConfigurationBegin(RACPropertySignalExampleGroups)
 
 		qck_it(@"should not invoke -setNilValueForKey: with a nilValue", ^{
 			RACSubject *subject = [RACSubject subject];
-			setupBlock(testObject, @keypath(testObject.integerValue), @42, subject);
+			setupBlock(testObject, @rac_keypath(testObject.integerValue), @42, subject);
 
 			__block BOOL setNilValueForKeyInvoked = NO;
 			[[testObject rac_signalForSelector:@selector(setNilValueForKey:)] subscribeNext:^(RACTuple *arguments) {
@@ -122,7 +122,7 @@ QuickConfigurationBegin(RACPropertySignalExampleGroups)
 
 		qck_it(@"should invoke -setNilValueForKey: without a nilValue", ^{
 			RACSubject *subject = [RACSubject subject];
-			setupBlock(testObject, @keypath(testObject.integerValue), nil, subject);
+			setupBlock(testObject, @rac_keypath(testObject.integerValue), nil, subject);
 
 			[subject sendNext:@1];
 			expect(@(testObject.integerValue)).to(equal(@1));

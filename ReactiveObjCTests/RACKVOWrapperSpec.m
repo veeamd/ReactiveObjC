@@ -336,7 +336,7 @@ qck_describe(@"-rac_observeKeyPath:options:observer:block:", ^{
 		qck_itBehavesLike(RACKVOWrapperExamples, ^{
 			return @{
 				RACKVOWrapperExamplesTargetBlock: targetBlock,
-				RACKVOWrapperExamplesKeyPath: @keypath(RACTestObject.new, weakTestObjectValue),
+				RACKVOWrapperExamplesKeyPath: @rac_keypath(RACTestObject.new, weakTestObjectValue),
 				RACKVOWrapperExamplesChangeBlock: changeBlock,
 				RACKVOWrapperExamplesValueBlock: valueBlock,
 				RACKVOWrapperExamplesChangesValueDirectly: @YES
@@ -346,7 +346,7 @@ qck_describe(@"-rac_observeKeyPath:options:observer:block:", ^{
 		qck_itBehavesLike(RACKVOWrapperCollectionExamples, ^{
 			return @{
 				RACKVOWrapperCollectionExamplesTargetBlock: targetBlock,
-				RACKVOWrapperCollectionExamplesKeyPath: @keypath(RACTestObject.new, orderedSetValue)
+				RACKVOWrapperCollectionExamplesKeyPath: @rac_keypath(RACTestObject.new, orderedSetValue)
 			};
 		});
 	});
@@ -370,7 +370,7 @@ qck_describe(@"-rac_observeKeyPath:options:observer:block:", ^{
 			qck_itBehavesLike(RACKVOWrapperExamples, ^{
 				return @{
 					RACKVOWrapperExamplesTargetBlock: targetBlock,
-					RACKVOWrapperExamplesKeyPath: @keypath(RACTestObject.new, strongTestObjectValue.weakTestObjectValue),
+					RACKVOWrapperExamplesKeyPath: @rac_keypath(RACTestObject.new, strongTestObjectValue.weakTestObjectValue),
 					RACKVOWrapperExamplesChangeBlock: changeBlock,
 					RACKVOWrapperExamplesValueBlock: valueBlock,
 					RACKVOWrapperExamplesChangesValueDirectly: @YES
@@ -380,7 +380,7 @@ qck_describe(@"-rac_observeKeyPath:options:observer:block:", ^{
 			qck_itBehavesLike(RACKVOWrapperCollectionExamples, ^{
 				return @{
 					RACKVOWrapperCollectionExamplesTargetBlock: targetBlock,
-					RACKVOWrapperCollectionExamplesKeyPath: @keypath(RACTestObject.new, strongTestObjectValue.orderedSetValue)
+					RACKVOWrapperCollectionExamplesKeyPath: @rac_keypath(RACTestObject.new, strongTestObjectValue.orderedSetValue)
 				};
 			});
 		});
@@ -403,7 +403,7 @@ qck_describe(@"-rac_observeKeyPath:options:observer:block:", ^{
 			qck_itBehavesLike(RACKVOWrapperExamples, ^{
 				return @{
 					RACKVOWrapperExamplesTargetBlock: targetBlock,
-					RACKVOWrapperExamplesKeyPath: @keypath([[RACTestObject alloc] init], weakTestObjectValue.strongTestObjectValue),
+					RACKVOWrapperExamplesKeyPath: @rac_keypath([[RACTestObject alloc] init], weakTestObjectValue.strongTestObjectValue),
 					RACKVOWrapperExamplesChangeBlock: changeBlock,
 					RACKVOWrapperExamplesValueBlock: valueBlock,
 					RACKVOWrapperExamplesChangesValueDirectly: @NO
@@ -416,7 +416,7 @@ qck_describe(@"-rac_observeKeyPath:options:observer:block:", ^{
 
 			__block id lastValue = nil;
 			@autoreleasepool {
-				[object rac_observeKeyPath:@keypath(object.dynamicObjectProperty) options:NSKeyValueObservingOptionInitial observer:nil block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
+				[object rac_observeKeyPath:@rac_keypath(object.dynamicObjectProperty) options:NSKeyValueObservingOptionInitial observer:nil block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
 					lastValue = value;
 				}];
 
@@ -431,7 +431,7 @@ qck_describe(@"-rac_observeKeyPath:options:observer:block:", ^{
 
 			__block id lastValue = nil;
 			@autoreleasepool {
-				[object rac_observeKeyPath:@keypath(object.dynamicObjectProperty.integerValue) options:NSKeyValueObservingOptionInitial observer:nil block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
+				[object rac_observeKeyPath:@rac_keypath(object.dynamicObjectProperty.integerValue) options:NSKeyValueObservingOptionInitial observer:nil block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
 					lastValue = value;
 				}];
 
@@ -446,7 +446,7 @@ qck_describe(@"-rac_observeKeyPath:options:observer:block:", ^{
 
 			__block id lastValue = nil;
 			@autoreleasepool {
-				[object rac_observeKeyPath:@keypath(object.dynamicObjectMethod) options:NSKeyValueObservingOptionInitial observer:nil block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
+				[object rac_observeKeyPath:@rac_keypath(object.dynamicObjectMethod) options:NSKeyValueObservingOptionInitial observer:nil block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
 					lastValue = value;
 				}];
 
@@ -478,11 +478,11 @@ qck_describe(@"-rac_observeKeyPath:options:observer:block:", ^{
 			target.weakTestObjectValue = target;
 
 			// These observations can only result in dealloc triggered callbacks.
-			[observer rac_observeKeyPath:@keypath(target.weakTestObjectValue) options:0 observer:observer block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
+			[observer rac_observeKeyPath:@rac_keypath(target.weakTestObjectValue) options:0 observer:observer block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
 				observerDeallocationTriggeredChange = YES;
 			}];
 
-			[target rac_observeKeyPath:@keypath(target.weakTestObjectValue) options:0 observer:observer block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
+			[target rac_observeKeyPath:@rac_keypath(target.weakTestObjectValue) options:0 observer:observer block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
 				targetDeallocationTriggeredChange = YES;
 			}];
 		}
@@ -506,7 +506,7 @@ qck_describe(@"-rac_observeKeyPath:options:observer:block:", ^{
 				objectDisposed = YES;
 			}]];
 
-			[target rac_observeKeyPath:@keypath(target.weakTestObjectValue) options:0 observer:target block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
+			[target rac_observeKeyPath:@rac_keypath(target.weakTestObjectValue) options:0 observer:target block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
 				objectDeallocationTriggeredChange = YES;
 			}];
 		}
@@ -527,7 +527,7 @@ qck_describe(@"-rac_observeKeyPath:options:observer:block:", ^{
 				objectDisposed = YES;
 			}]];
 
-			[target rac_observeKeyPath:@keypath(target.weakObjectWithProtocol) options:0 observer:target block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
+			[target rac_observeKeyPath:@rac_keypath(target.weakObjectWithProtocol) options:0 observer:target block:^(id value, NSDictionary *change, BOOL causedByDealloc, BOOL affectedOnlyLastComponent) {
 				objectDeallocationTriggeredChange = YES;
 			}];
 		}

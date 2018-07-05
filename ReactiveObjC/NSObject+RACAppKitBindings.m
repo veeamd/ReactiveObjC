@@ -74,9 +74,9 @@
 #pragma mark Properties
 
 - (void)setValue:(id)value {
-	[self willChangeValueForKey:@keypath(self.value)];
+	[self willChangeValueForKey:@rac_keypath(self.value)];
 	_value = value;
-	[self didChangeValueForKey:@keypath(self.value)];
+	[self didChangeValueForKey:@rac_keypath(self.value)];
 }
 
 #pragma mark Lifecycle
@@ -91,10 +91,10 @@
 	_bindingName = [bindingName copy];
 	_channel = [[RACChannel alloc] init];
 
-	@weakify(self);
+	@rac_weakify(self);
 
 	void (^cleanUp)() = ^{
-		@strongify(self);
+		@rac_strongify(self);
 
 		id target = self.target;
 		if (target == nil) return;
@@ -110,14 +110,14 @@
 		cleanUp();
 	} completed:cleanUp];
 
-	[self.target bind:bindingName toObject:self withKeyPath:@keypath(self.value) options:options];
+	[self.target bind:bindingName toObject:self withKeyPath:@rac_keypath(self.value) options:options];
 
 	// Keep the proxy alive as long as the target, or until the property subject
 	// terminates.
 	objc_setAssociatedObject(self.target, (__bridge void *)self, self, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
 	[[self.target rac_deallocDisposable] addDisposable:[RACDisposable disposableWithBlock:^{
-		@strongify(self);
+		@rac_strongify(self);
 		[self.channel.followingTerminal sendCompleted];
 	}]];
 

@@ -39,7 +39,7 @@ qck_describe(@"+rac_signalWithChangesFor:keyPath:options:observer:", ^{
 			object = [[RACTestObject alloc] init];
 
 			objectValueSignal = ^(NSKeyValueObservingOptions options) {
-				return [[object rac_valuesAndChangesForKeyPath:@keypath(object, objectValue) options:options observer:self] reduceEach:^(id value, NSDictionary *change) {
+				return [[object rac_valuesAndChangesForKeyPath:@rac_keypath(object, objectValue) options:options observer:self] reduceEach:^(id value, NSDictionary *change) {
 					return change;
 				}];
 			};
@@ -143,7 +143,7 @@ qck_describe(@"-rac_valuesAndChangesForKeyPath:options:observer:", ^{
 		@autoreleasepool {
 			RACTestObject *object __attribute__((objc_precise_lifetime)) = [[RACTestObject alloc] init];
 			RACTestObject *observer __attribute__((objc_precise_lifetime)) = [[RACTestObject alloc] init];
-			signal = [object rac_valuesAndChangesForKeyPath:@keypath(object, stringValue) options:0 observer:observer];
+			signal = [object rac_valuesAndChangesForKeyPath:@rac_keypath(object, stringValue) options:0 observer:observer];
 		}
 
 		__block BOOL completed = NO;

@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Do not use this directly. Use the RAC macro above.
 #define RAC_(TARGET, KEYPATH, NILVALUE) \
-    [[RACSubscriptingAssignmentTrampoline alloc] initWithTarget:(TARGET) nilValue:(NILVALUE)][@keypath(TARGET, KEYPATH)]
+    [[RACSubscriptingAssignmentTrampoline alloc] initWithTarget:(TARGET) nilValue:(NILVALUE)][@rac_keypath(TARGET, KEYPATH)]
 
 @interface RACSubscriptingAssignmentTrampoline : NSObject
 

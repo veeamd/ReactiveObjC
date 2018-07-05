@@ -1307,7 +1307,7 @@ qck_describe(@"-setKeyPath:onObject:", ^{
     RACSubject *subject = [RACSubject subject];
     @autoreleasepool {
       RACTestObject *testObject __attribute__((objc_precise_lifetime)) = [[RACTestObject alloc] init];
-      [subject setKeyPath:@keypath(testObject.objectValue) onObject:testObject];
+      [subject setKeyPath:@rac_keypath(testObject.objectValue) onObject:testObject];
       expect(testObject.objectValue).to(beNil());
 
       [subject sendNext:@1];
@@ -1324,19 +1324,19 @@ qck_describe(@"-setKeyPath:onObject:", ^{
   qck_it(@"should allow a new derivation after the signal's completed", ^{
     RACSubject *subject1 = [RACSubject subject];
     RACTestObject *testObject = [[RACTestObject alloc] init];
-    [subject1 setKeyPath:@keypath(testObject.objectValue) onObject:testObject];
+    [subject1 setKeyPath:@rac_keypath(testObject.objectValue) onObject:testObject];
     [subject1 sendCompleted];
 
     RACSubject *subject2 = [RACSubject subject];
     // This will assert if the previous completion didn't dispose of the
     // subscription.
-    [subject2 setKeyPath:@keypath(testObject.objectValue) onObject:testObject];
+    [subject2 setKeyPath:@rac_keypath(testObject.objectValue) onObject:testObject];
   });
 
   qck_it(@"should set the given value when nil is received", ^{
     RACSubject *subject = [RACSubject subject];
     RACTestObject *testObject = [[RACTestObject alloc] init];
-    [subject setKeyPath:@keypath(testObject.integerValue) onObject:testObject nilValue:@5];
+    [subject setKeyPath:@rac_keypath(testObject.integerValue) onObject:testObject nilValue:@5];
 
     [subject sendNext:@1];
     expect(@(testObject.integerValue)).to(equal(@1));
@@ -1358,7 +1358,7 @@ qck_describe(@"-setKeyPath:onObject:", ^{
       deallocValue = unsafeTestObject.slowObjectValue;
     }]];
 
-    [subject setKeyPath:@keypath(testObject.slowObjectValue) onObject:testObject];
+    [subject setKeyPath:@rac_keypath(testObject.slowObjectValue) onObject:testObject];
     expect(testObject.slowObjectValue).to(beNil());
 
     // Attempt to deallocate concurrently.

@@ -39,10 +39,10 @@
 - (instancetype)init {
 	self = [super init];
 
-	@unsafeify(self);
+	@rac_unsafeify(self);
 
 	RACDisposable *selfDisposable = [RACDisposable disposableWithBlock:^{
-		@strongify(self);
+		@rac_strongify(self);
 
 		@synchronized (self) {
 			self.next = nil;
@@ -98,12 +98,12 @@
 	RACCompoundDisposable *selfDisposable = self.disposable;
 	[selfDisposable addDisposable:otherDisposable];
 
-	@unsafeify(otherDisposable);
+	@rac_unsafeify(otherDisposable);
 
 	// If this subscription terminates, purge its disposable to avoid unbounded
 	// memory growth.
 	[otherDisposable addDisposable:[RACDisposable disposableWithBlock:^{
-		@strongify(otherDisposable);
+		@rac_strongify(otherDisposable);
 		[selfDisposable removeDisposable:otherDisposable];
 	}]];
 }

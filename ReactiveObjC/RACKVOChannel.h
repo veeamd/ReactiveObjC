@@ -58,7 +58,7 @@
 
 /// Do not use this directly. Use the RACChannelTo macro above.
 #define RACChannelTo_(TARGET, KEYPATH, NILVALUE) \
-    [[RACKVOChannel alloc] initWithTarget:(TARGET) keyPath:@keypath(TARGET, KEYPATH) nilValue:(NILVALUE)][@keypath(RACKVOChannel.new, followingTerminal)]
+    [[RACKVOChannel alloc] initWithTarget:(TARGET) keyPath:@rac_keypath(TARGET, KEYPATH) nilValue:(NILVALUE)][@rac_keypath(RACKVOChannel.new, followingTerminal)]
 
 NS_ASSUME_NONNULL_BEGIN
 

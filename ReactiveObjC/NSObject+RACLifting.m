@@ -20,7 +20,7 @@
 	NSCParameterAssert(selector != NULL);
 	NSCParameterAssert(arguments != nil);
 	
-	@unsafeify(self);
+	@rac_unsafeify(self);
 	
 	NSMethodSignature *methodSignature = [self methodSignatureForSelector:selector];
 	NSCAssert(methodSignature != nil, @"%@ does not respond to %@", self, NSStringFromSelector(selector));
@@ -28,7 +28,7 @@
 	return [[[[arguments
 		takeUntil:self.rac_willDeallocSignal]
 		map:^(RACTuple *arguments) {
-			@strongify(self);
+			@rac_strongify(self);
 			
 			NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
 			invocation.selector = selector;

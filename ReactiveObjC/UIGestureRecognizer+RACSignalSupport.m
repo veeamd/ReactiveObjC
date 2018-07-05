@@ -18,11 +18,11 @@
 @implementation UIGestureRecognizer (RACSignalSupport)
 
 - (RACSignal *)rac_gestureSignal {
-	@weakify(self);
+	@rac_weakify(self);
 
 	return [[RACSignal
 		createSignal:^(id<RACSubscriber> subscriber) {
-			@strongify(self);
+			@rac_strongify(self);
 
 			[self addTarget:subscriber action:@selector(sendNext:)];
 			[self.rac_deallocDisposable addDisposable:[RACDisposable disposableWithBlock:^{
@@ -30,7 +30,7 @@
 			}]];
 
 			return [RACDisposable disposableWithBlock:^{
-				@strongify(self);
+				@rac_strongify(self);
 				[self removeTarget:subscriber action:@selector(sendNext:)];
 			}];
 		}]

@@ -14,18 +14,18 @@
 #import "metamacros.h"
 
 /**
- * \@keypath allows compile-time verification of key paths. Given a real object
+ * \@rac_keypath allows compile-time verification of key paths. Given a real object
  * receiver and key path:
  *
  * @code
 
-NSString *UTF8StringPath = @keypath(str.lowercaseString.UTF8String);
+NSString *UTF8StringPath = @rac_keypath(str.lowercaseString.UTF8String);
 // => @"lowercaseString.UTF8String"
 
-NSString *versionPath = @keypath(NSObject, version);
+NSString *versionPath = @rac_keypath(NSObject, version);
 // => @"version"
 
-NSString *lowercaseStringPath = @keypath(NSString.new, lowercaseString);
+NSString *lowercaseStringPath = @rac_keypath(NSString.new, lowercaseString);
 // => @"lowercaseString"
 
  * @endcode
@@ -36,37 +36,37 @@ NSString *lowercaseStringPath = @keypath(NSString.new, lowercaseString);
  * In addition to simply creating a key path, this macro ensures that the key
  * path is valid at compile-time (causing a syntax error if not), and supports
  * refactoring, such that changing the name of the property will also update any
- * uses of \@keypath.
+ * uses of \@rac_keypath.
  */
-#define keypath(...) \
-    metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__))(keypath1(__VA_ARGS__))(keypath2(__VA_ARGS__))
+#define rac_keypath(...) \
+    metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__))(rac_keypath1(__VA_ARGS__))(rac_keypath2(__VA_ARGS__))
 
-#define keypath1(PATH) \
+#define rac_keypath1(PATH) \
     (((void)(NO && ((void)PATH, NO)), strchr(# PATH, '.') + 1))
 
-#define keypath2(OBJ, PATH) \
+#define rac_keypath2(OBJ, PATH) \
     (((void)(NO && ((void)OBJ.PATH, NO)), # PATH))
 
 /**
- * \@collectionKeypath allows compile-time verification of key paths across collections NSArray/NSSet etc. Given a real object
+ * \@rac_collectionKeypath allows compile-time verification of key paths across collections NSArray/NSSet etc. Given a real object
  * receiver, collection object receiver and related keypaths:
  *
  * @code
  
- NSString *employessFirstNamePath = @collectionKeypath(department.employees, Employee.new, firstName)
+ NSString *employessFirstNamePath = @rac_collectionKeypath(department.employees, Employee.new, firstName)
  // => @"employees.firstName"
  
- NSString *employessFirstNamePath = @collectionKeypath(Department.new, employees, Employee.new, firstName)
+ NSString *employessFirstNamePath = @rac_collectionKeypath(Department.new, employees, Employee.new, firstName)
  // => @"employees.firstName"
 
  * @endcode
  *
  */
-#define collectionKeypath(...) \
-    metamacro_if_eq(3, metamacro_argcount(__VA_ARGS__))(collectionKeypath3(__VA_ARGS__))(collectionKeypath4(__VA_ARGS__))
+#define rac_collectionKeypath(...) \
+    metamacro_if_eq(3, metamacro_argcount(__VA_ARGS__))(rac_collectionKeypath3(__VA_ARGS__))(rac_collectionKeypath4(__VA_ARGS__))
 
-#define collectionKeypath3(PATH, COLLECTION_OBJECT, COLLECTION_PATH) ([[NSString stringWithFormat:@"%s.%s",keypath(PATH), keypath(COLLECTION_OBJECT, COLLECTION_PATH)] UTF8String])
+#define rac_collectionKeypath3(PATH, COLLECTION_OBJECT, COLLECTION_PATH) ([[NSString stringWithFormat:@"%s.%s",keypath(PATH), keypath(COLLECTION_OBJECT, COLLECTION_PATH)] UTF8String])
 
-#define collectionKeypath4(OBJ, PATH, COLLECTION_OBJECT, COLLECTION_PATH) ([[NSString stringWithFormat:@"%s.%s",keypath(OBJ, PATH), keypath(COLLECTION_OBJECT, COLLECTION_PATH)] UTF8String])
+#define rac_collectionKeypath4(OBJ, PATH, COLLECTION_OBJECT, COLLECTION_PATH) ([[NSString stringWithFormat:@"%s.%s",keypath(OBJ, PATH), keypath(COLLECTION_OBJECT, COLLECTION_PATH)] UTF8String])
 
 #endif

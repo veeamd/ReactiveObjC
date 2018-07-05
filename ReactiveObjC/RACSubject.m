@@ -116,9 +116,9 @@
 	if (d.disposed) return;
 	[self.disposable addDisposable:d];
 
-	@weakify(self, d);
+	@rac_weakify(self, d);
 	[d addDisposable:[RACDisposable disposableWithBlock:^{
-		@strongify(self, d);
+		@rac_strongify(self, d);
 		[self.disposable removeDisposable:d];
 	}]];
 }
