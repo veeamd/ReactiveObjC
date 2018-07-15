@@ -494,6 +494,24 @@
           RACDescription(startingValue)];
 }
 
+- (instancetype)combinePreviousWithStart:(id)start reduce:(id (^)(id previous, id next))reduceBlock {
+  NSCParameterAssert(reduceBlock != NULL);
+
+  return [[RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber> subscriber) {
+    __block id _Nullable previous = start;
+
+    return [self subscribeNext:^(id _Nullable current) {
+      id _Nullable reducedValue = reduceBlock(previous, current);
+      previous = current;
+      [subscriber sendNext:reducedValue];
+    } error:^(NSError * _Nullable error) {
+      [subscriber sendError:error];
+    } completed:^{
+      [subscriber sendCompleted];
+    }];
+  }] setNameWithFormat:@"[%@] -combinePreviousWithStart: %@ reduce:", self.name, RACDescription(start)];
+}
+
 - (instancetype)takeUntilBlock:(BOOL (^)(id x))predicate {
   NSCParameterAssert(predicate != nil);
 
