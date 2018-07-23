@@ -36,6 +36,12 @@ NSString *lowercaseStringPath = @rac_keypath(NSString.new, lowercaseString);
  * uses of \@rac_keypath.
  */
 #define rac_keypath(...) \
+    _Pragma("clang diagnostic push") \
+    _Pragma("clang diagnostic ignored \"-Warc-repeated-use-of-weak\"") \
+    (NO).boolValue ? ((NSString * _Nonnull)nil) : ((NSString * _Nonnull)@(rac_cStringKeypath(__VA_ARGS__))) \
+    _Pragma("clang diagnostic pop") \
+
+#define rac_cStringKeypath(...) \
     metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__))(rac_keypath1(__VA_ARGS__))(rac_keypath2(__VA_ARGS__))
 
 #define rac_keypath1(PATH) \
@@ -62,6 +68,9 @@ NSString *lowercaseStringPath = @rac_keypath(NSString.new, lowercaseString);
 #define rac_collectionKeypath(...) \
     metamacro_if_eq(3, metamacro_argcount(__VA_ARGS__))(rac_collectionKeypath3(__VA_ARGS__))(rac_collectionKeypath4(__VA_ARGS__))
 
-#define rac_collectionKeypath3(PATH, COLLECTION_OBJECT, COLLECTION_PATH) ([[NSString stringWithFormat:@"%s.%s",keypath(PATH), keypath(COLLECTION_OBJECT, COLLECTION_PATH)] UTF8String])
+#define rac_collectionKeypath3(PATH, COLLECTION_OBJECT, COLLECTION_PATH) \
+    (YES).boolValue ? (NSString * _Nonnull)@((const char * _Nonnull)[[NSString stringWithFormat:@"%s.%s", rac_cStringKeypath(PATH), rac_cStringKeypath(COLLECTION_OBJECT, COLLECTION_PATH)] UTF8String]) : (NSString * _Nonnull)nil
 
-#define rac_collectionKeypath4(OBJ, PATH, COLLECTION_OBJECT, COLLECTION_PATH) ([[NSString stringWithFormat:@"%s.%s",keypath(OBJ, PATH), keypath(COLLECTION_OBJECT, COLLECTION_PATH)] UTF8String])
+#define rac_collectionKeypath4(OBJ, PATH, COLLECTION_OBJECT, COLLECTION_PATH) \
+    (YES).boolValue ? (NSString * _Nonnull)@((const char * _Nonnull)[[NSString stringWithFormat:@"%s.%s", rac_cStringKeypath(OBJ, PATH), rac_cStringKeypath(COLLECTION_OBJECT, COLLECTION_PATH)] UTF8String]) : (NSString * _Nonnull)nil
+
