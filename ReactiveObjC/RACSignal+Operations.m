@@ -28,6 +28,7 @@
 #import "RACUnit.h"
 #import <libkern/OSAtomic.h>
 #import <objc/runtime.h>
+#import <os/lock.h>
 
 NSString * const RACSignalErrorDomain = @"RACSignalErrorDomain";
 
@@ -852,22 +853,71 @@ static RACDisposable *subscribeForever (RACSignal *signal, void (^next)(id), voi
 
 - (RACSignal *)switchToLatest {
   return [[RACSignal createSignal:^(id<RACSubscriber> subscriber) {
-    RACMulticastConnection *connection = [self publish];
+    __block BOOL outerCompleted = NO;
+    __block BOOL innerCompleted = NO;
+    __block NSUInteger currentInnerIndex = 0;
 
-    RACDisposable *subscriptionDisposable = [[connection.signal
-      flattenMap:^(RACSignal *x) {
-        NSCAssert(x == nil || [x isKindOfClass:RACSignal.class], @"-switchToLatest requires that the source signal (%@) send signals. Instead we got: %@", self, x);
+    RACSerialDisposable *innerDisposable = [[RACSerialDisposable alloc] init];
+    __block os_unfair_lock lock = OS_UNFAIR_LOCK_INIT;
 
-        // -concat:[RACSignal never] prevents completion of the receiver from
-        // prematurely terminating the inner signal.
-        return [x takeUntil:[connection.signal concat:[RACSignal never]]];
-      }]
-      subscribe:subscriber];
+    RACDisposable *outerDisposable = [self subscribeNext:^(RACSignal *signal) {
+      NSCAssert(!signal || [signal isKindOfClass:RACSignal.class], @"-switchToLatest expects signals as values, instead we got: %@", signal);
+      signal = signal ?: [RACSignal empty];
 
-    RACDisposable *connectionDisposable = [connection connect];
+      // Ensure no further data is sent from the previous inner signal.
+      [innerDisposable.disposable dispose];
+
+      os_unfair_lock_lock(&lock);
+      NSUInteger innerIndex = ++currentInnerIndex;
+      // We got a new inner signal, so reset the inner completion flag only if the outer signal has
+      // not completed already, otherwise we may miss sending a completion in a different code path.
+      innerCompleted &= outerCompleted;
+      BOOL alreadyCompleted = innerCompleted;
+      os_unfair_lock_unlock(&lock);
+
+      // Avoid subscribing to a new inner signal which may send more values if the signal already
+      // completed. In this case we're already going to send a completion via the inner or the outer
+      // signals in a different code path.
+      if (alreadyCompleted) {
+        return;
+      }
+
+      // Required to guarantee that the previous inner signal will not send any new values from now
+      // on.
+      [innerDisposable.disposable dispose];
+
+      innerDisposable.disposable = [signal subscribeNext:^(id x) {
+        [subscriber sendNext:x];
+      } error:^(NSError *error) {
+        [subscriber sendError:error];
+      } completed:^{
+        os_unfair_lock_lock(&lock);
+        if (innerIndex == currentInnerIndex) {
+          innerCompleted = YES;
+        }
+        BOOL sendCompleted = innerCompleted && outerCompleted;
+        os_unfair_lock_unlock(&lock);
+
+        if (sendCompleted) {
+          [subscriber sendCompleted];
+        }
+      }];
+    } error:^(NSError *error) {
+      [subscriber sendError:error];
+    } completed:^{
+      os_unfair_lock_lock(&lock);
+      BOOL localInnerCompleted = innerCompleted;
+      outerCompleted = YES;
+      os_unfair_lock_unlock(&lock);
+
+      if (localInnerCompleted) {
+        [subscriber sendCompleted];
+      }
+    }];
+
     return [RACDisposable disposableWithBlock:^{
-      [subscriptionDisposable dispose];
-      [connectionDisposable dispose];
+      [innerDisposable dispose];
+      [outerDisposable dispose];
     }];
   }] setNameWithFormat:@"[%@] -switchToLatest", self.name];
 }

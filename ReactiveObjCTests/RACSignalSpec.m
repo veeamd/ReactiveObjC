@@ -252,7 +252,7 @@ qck_describe(@"-bind:", ^{
     expect(@(secondSubscribed)).to(beFalsy());
     expect(@(errored)).to(beTruthy());
   });
-  
+
   qck_it(@"should not retain signals that are subscribed", ^{
     __weak RACSignal *weakSignal;
     @autoreleasepool {
@@ -1985,6 +1985,20 @@ qck_describe(@"-switchToLatest", ^{
     expect(@(completed)).to(beTruthy());
   });
 
+  qck_it(@"should dispose previous inner signal before subscribing to new inner signal", ^{
+    RACSubject *otherSignal = [RACSubject subject];
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+      [otherSignal sendNext:@"foo"];
+      return nil;
+    }];
+
+    [subject sendNext:otherSignal];
+    expect(values).to(equal(@[]));
+
+    [subject sendNext:signal];
+    expect(values).to(equal(@[]));
+  });
+
   qck_it(@"should accept nil signals", ^{
     [subject sendNext:nil];
     [subject sendNext:[RACSignal createSignal:^ RACDisposable * (id<RACSubscriber> subscriber) {
@@ -1995,6 +2009,37 @@ qck_describe(@"-switchToLatest", ^{
 
     NSArray *expected = @[ @1, @2 ];
     expect(values).to(equal(expected));
+  });
+
+  qck_it(@"should deliver in right order when inner signals deliver on multiple schedulers", ^{
+    for (int i = 0; i < 50; ++i) {
+      @autoreleasepool {
+        RACSignal *signalA = [[RACSignal return:@1]
+                              subscribeOn:[RACScheduler scheduler]];
+
+        RACSignal *signalB = [[RACSignal return:@2]
+                              subscribeOn:[RACScheduler scheduler]];
+
+        __block NSMutableArray *values = [NSMutableArray array];
+        RACSubject *subject = [RACSubject subject];
+
+        __block atomic_bool completed = NO;
+        [[subject
+            switchToLatest]
+            subscribeNext:^(id x) {
+              [values addObject:x];
+            } completed:^{
+              expect(values.lastObject).to(equal(@2));
+              completed = YES;
+            }];
+
+        [subject sendNext:signalA];
+        [subject sendNext:signalB];
+        [subject sendCompleted];
+
+        expect(completed).toEventually(beTruthy());
+      }
+    }
   });
 
   qck_it(@"should return a cold signal", ^{
@@ -3264,7 +3309,7 @@ qck_describe(@"-any:", ^{
   qck_beforeEach(^{
     signal = [[[RACSignal return:@0] concat:[RACSignal return:@1]] concat:[RACSignal return:@2]];
   });
-  
+
   qck_it(@"should return true when the predicate is truthy for at least one value", ^{
     RACSignal *any = [signal any:^BOOL(NSNumber *value) {
       return value.integerValue > 0;
@@ -3280,7 +3325,7 @@ qck_describe(@"-any:", ^{
     expect(values).to(equal(@[@YES]));
     expect(@(completed)).to(equal(@YES));
   });
-  
+
   qck_it(@"should return false when the predicate is falsy for all values", ^{
     RACSignal *any = [signal any:^BOOL(NSNumber *value) {
       return value.integerValue == 3;
@@ -3322,7 +3367,7 @@ qck_describe(@"-all:", ^{
   qck_beforeEach(^{
     signal = [[[RACSignal return:@0] concat:[RACSignal return:@1]] concat:[RACSignal return:@2]];
   });
-  
+
   qck_it(@"should return true when all values pass", ^{
     RACSignal *all = [signal all:^BOOL(NSNumber *value) {
       return value.integerValue >= 0;
@@ -3338,7 +3383,7 @@ qck_describe(@"-all:", ^{
     expect(values).to(equal(@[@YES]));
     expect(@(completed)).to(equal(@YES));
   });
-  
+
   qck_it(@"should return false when at least one value fails", ^{
     RACSignal *all = [signal all:^BOOL(NSNumber *value) {
       return value.integerValue < 2;
