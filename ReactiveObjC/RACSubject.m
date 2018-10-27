@@ -90,7 +90,7 @@
 
 #pragma mark RACSubscriber
 
-- (void)sendNext:(id)value {
+- (void)sendNext:(nullable id)value {
 	[self enumerateSubscribersUsingBlock:^(id<RACSubscriber> subscriber) {
 		[subscriber sendNext:value];
 	}];
