@@ -15,6 +15,8 @@
 #import "RACTestObject.h"
 
 #import <ReactiveObjC/EXTKeyPathCoding.h>
+#import <stdatomic.h>
+
 #import "NSObject+RACDeallocating.h"
 #import "NSObject+RACPropertySubscribing.h"
 #import "RACBehaviorSubject.h"
@@ -33,7 +35,6 @@
 #import "RACTestScheduler.h"
 #import "RACTuple.h"
 #import "RACUnit.h"
-#import <libkern/OSAtomic.h>
 
 // Set in a beforeAll below.
 static NSError *RACSignalTestError;
@@ -111,7 +112,7 @@ qck_describe(@"RACStream", ^{
   };
 
   RACSignal *infiniteSignal = [RACSignal createSignal:^(id<RACSubscriber> subscriber) {
-    __block volatile int32_t done = 0;
+    __block atomic_int done = 0;
 
     [RACScheduler.mainThreadScheduler schedule:^{
       while (!done) {
@@ -120,7 +121,7 @@ qck_describe(@"RACStream", ^{
     }];
 
     return [RACDisposable disposableWithBlock:^{
-      OSAtomicIncrement32Barrier(&done);
+      ++done;
     }];
   }];
 
@@ -345,21 +346,21 @@ qck_describe(@"subscribing", ^{
   });
 
   qck_it(@"should have a current scheduler in didSubscribe block", ^{
-    __block RACScheduler *currentScheduler;
+    __block atomic_bool hasCurrentScheduler = NO;
     RACSignal *signal = [RACSignal createSignal:^ RACDisposable * (id<RACSubscriber> subscriber) {
-      currentScheduler = RACScheduler.currentScheduler;
+      hasCurrentScheduler = RACScheduler.currentScheduler != nil;
       [subscriber sendCompleted];
       return nil;
     }];
 
     [signal subscribeNext:^(id x) {}];
-    expect(currentScheduler).notTo(beNil());
+    expect(hasCurrentScheduler).to(beTruthy());
 
-    currentScheduler = nil;
+    hasCurrentScheduler = NO;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       [signal subscribeNext:^(id x) {}];
     });
-    expect(currentScheduler).toEventuallyNot(beNil());
+    expect(hasCurrentScheduler).toEventually(beTruthy());
   });
 
   qck_it(@"should automatically dispose of other subscriptions from +createSignal:", ^{
@@ -860,12 +861,11 @@ qck_describe(@"continuation", ^{
       }];
     }];
 
-    __block NSUInteger nextCount = 0;
-    __block BOOL gotCompleted = NO;
+    __block atomic_uint nextCount = 0;
+    __block atomic_bool gotCompleted = NO;
     [[signal repeat] subscribeNext:^(id x) {
       nextCount++;
     } error:^(NSError *error) {
-
     } completed:^{
       gotCompleted = YES;
     }];
@@ -2304,7 +2304,7 @@ qck_describe(@"+interval:onScheduler: and +interval:onScheduler:withLeeway:", ^{
 
   qck_beforeEach(^{
     testTimer = [^(RACSignal *timer, NSNumber *minInterval, NSNumber *leeway) {
-      __block NSUInteger nextsReceived = 0;
+      __block atomic_uint nextsReceived = 0;
 
       NSTimeInterval startTime = NSDate.timeIntervalSinceReferenceDate;
       [[timer take:3] subscribeNext:^(NSDate *date) {

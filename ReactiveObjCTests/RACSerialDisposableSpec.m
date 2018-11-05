@@ -11,6 +11,8 @@
 
 #import "RACSerialDisposable.h"
 
+#import <stdatomic.h>
+
 QuickSpecBegin(RACSerialDisposableSpec)
 
 qck_it(@"should initialize with -init", ^{
@@ -138,12 +140,12 @@ qck_it(@"should release the inner disposable upon deallocation", ^{
 });
 
 qck_it(@"should not crash when racing between swapInDisposable and disposable", ^{
-	__block BOOL stop = NO;
+	__block atomic_bool stop = NO;
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (long long)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 		stop = YES;
 	});
 
-	RACSerialDisposable *serialDisposable =  [[RACSerialDisposable alloc] init];
+	RACSerialDisposable *serialDisposable = [[RACSerialDisposable alloc] init];
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 		while (!stop) {
 			[serialDisposable swapInDisposable:[RACDisposable disposableWithBlock:^{}]];

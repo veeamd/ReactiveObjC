@@ -10,12 +10,14 @@
 @import Nimble;
 
 #import "RACScheduler.h"
+
+#import <ReactiveObjC/EXTScope.h>
+#import <stdatomic.h>
+
 #import "RACScheduler+Private.h"
 #import "RACQueueScheduler+Subclass.h"
 #import "RACDisposable.h"
-#import <ReactiveObjC/EXTScope.h>
 #import "RACTestExampleScheduler.h"
-#import <libkern/OSAtomic.h>
 
 // This shouldn't be used directly. Use the `expectCurrentSchedulers` block
 // below instead.
@@ -143,8 +145,8 @@ qck_describe(@"+scheduler", ^{
 	});
 
 	qck_it(@"should cancel scheduled blocks when disposed", ^{
-		__block BOOL firstBlockRan = NO;
-		__block BOOL secondBlockRan = NO;
+		__block atomic_bool firstBlockRan = NO;
+		__block atomic_bool secondBlockRan = NO;
 
 		// Start off on the scheduler so the enqueued blocks won't run until we
 		// return.
@@ -167,7 +169,7 @@ qck_describe(@"+scheduler", ^{
 	});
 
 	qck_it(@"should schedule future blocks", ^{
-		__block BOOL done = NO;
+		__block atomic_bool done = NO;
 
 		[scheduler after:futureDate() schedule:^{
 			done = YES;
@@ -178,8 +180,8 @@ qck_describe(@"+scheduler", ^{
 	});
 
 	qck_it(@"should cancel future blocks when disposed", ^{
-		__block BOOL firstBlockRan = NO;
-		__block BOOL secondBlockRan = NO;
+		__block atomic_bool firstBlockRan = NO;
+		__block atomic_bool secondBlockRan = NO;
 
 		NSDate *date = futureDate();
 		RACDisposable *disposable = [scheduler after:date schedule:^{
@@ -199,7 +201,7 @@ qck_describe(@"+scheduler", ^{
 	});
 
 	qck_it(@"should schedule recurring blocks", ^{
-		__block NSUInteger count = 0;
+		__block atomic_uint count = 0;
 
 		RACDisposable *disposable = [scheduler after:[NSDate date] repeatingEvery:0.05 withLeeway:0 schedule:^{
 			count++;
@@ -259,8 +261,8 @@ qck_describe(@"+subscriptionScheduler", ^{
 	});
 
 	qck_it(@"should execute scheduled blocks immediately if it's in a scheduler already", ^{
-		__block BOOL done = NO;
-		__block BOOL executedImmediately = NO;
+		__block atomic_bool done = NO;
+		__block atomic_bool executedImmediately = NO;
 
 		[[RACScheduler scheduler] schedule:^{
 			[RACScheduler.subscriptionScheduler schedule:^{
@@ -366,12 +368,12 @@ qck_describe(@"-scheduleRecursiveBlock:", ^{
 		});
 
 		qck_it(@"should reschedule when invoked asynchronously", ^{
-			__block NSUInteger count = 0;
+			__block atomic_uint count = 0;
 
 			RACScheduler *asynchronousScheduler = [RACScheduler scheduler];
 			[RACScheduler.mainThreadScheduler scheduleRecursiveBlock:^(void (^recurse)(void)) {
 				[asynchronousScheduler after:[NSDate dateWithTimeIntervalSinceNow:0.01] schedule:^{
-					NSUInteger thisCount = ++count;
+					atomic_uint thisCount = ++count;
 					if (thisCount < 3) {
 						recurse();
 
@@ -386,7 +388,7 @@ qck_describe(@"-scheduleRecursiveBlock:", ^{
 		});
 
 		qck_it(@"shouldn't reschedule itself when disposed", ^{
-			__block NSUInteger count = 0;
+			__block atomic_uint count = 0;
 			__block RACDisposable *disposable = [RACScheduler.mainThreadScheduler scheduleRecursiveBlock:^(void (^recurse)(void)) {
 				++count;
 
@@ -409,7 +411,7 @@ qck_describe(@"subclassing", ^{
 	});
 
 	qck_it(@"should invoke blocks scheduled with -schedule:", ^{
-		__block BOOL invoked = NO;
+		__block atomic_bool invoked = NO;
 		[scheduler schedule:^{
 			invoked = YES;
 		}];
@@ -418,7 +420,7 @@ qck_describe(@"subclassing", ^{
 	});
 
 	qck_it(@"should invoke blocks scheduled with -after:schedule:", ^{
-		__block BOOL invoked = NO;
+		__block atomic_bool invoked = NO;
 		[scheduler after:[NSDate dateWithTimeIntervalSinceNow:0.01] schedule:^{
 			invoked = YES;
 		}];
