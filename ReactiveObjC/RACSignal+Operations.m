@@ -313,14 +313,20 @@ static RACDisposable *subscribeForever (RACSignal *signal, void (^next)(id), voi
 - (RACSignal *)finally:(void (^)(void))block {
   NSCParameterAssert(block != NULL);
 
-  return [[[self
-    doError:^(NSError *error) {
+  return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    RACDisposable *selfDisposable = [self subscribeNext:^(id x) {
+      [subscriber sendNext:x];
+    } error:^(NSError *error) {
+      [subscriber sendError:error];
+    } completed:^{
+      [subscriber sendCompleted];
+    }];
+
+    return [RACDisposable disposableWithBlock:^{
       block();
-    }]
-    doCompleted:^{
-      block();
-    }]
-    setNameWithFormat:@"[%@] -finally:", self.name];
+      [selfDisposable dispose];
+    }];
+  }] setNameWithFormat:@"[%@] -finally:", self.name];
 }
 
 - (RACSignal *)bufferWithTime:(NSTimeInterval)interval onScheduler:(RACScheduler *)scheduler {
