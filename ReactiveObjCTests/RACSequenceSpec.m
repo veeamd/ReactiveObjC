@@ -12,6 +12,8 @@
 #import "RACSequenceExamples.h"
 #import "RACStreamExamples.h"
 
+#import <stdatomic.h>
+
 #import "NSArray+RACSequenceAdditions.h"
 #import "NSObject+RACDeallocating.h"
 #import "NSObject+RACPropertySubscribing.h"
@@ -305,7 +307,7 @@ qck_it(@"shouldn't overflow the stack when deallocated on a background queue", ^
 		[values addObject:@(i)];
 	}
 
-	__block BOOL finished = NO;
+	__block atomic_bool finished = NO;
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 		@autoreleasepool {
 			(void)[[values.rac_sequence map:^(id value) {

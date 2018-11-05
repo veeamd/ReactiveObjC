@@ -11,6 +11,8 @@
 
 #import "RACSequenceExamples.h"
 
+#import <stdatomic.h>
+
 #import "RACScheduler.h"
 #import "RACSequence.h"
 #import "RACSignal+Operations.h"
@@ -59,8 +61,8 @@ QuickConfigurationBegin(RACSequenceExampleGroups)
 				RACScheduler* scheduler = [RACScheduler schedulerWithPriority:RACSchedulerPriorityHigh];
 				RACSignal *signal = [sequence signalWithScheduler:scheduler];
 
-				__block BOOL flag = YES;
-				__block BOOL completed = NO;
+				__block atomic_bool flag = YES;
+				__block atomic_bool completed = NO;
 				[signal subscribeNext:^(id x) {
 					expect(@(flag)).to(beTruthy());
 					flag = NO;
