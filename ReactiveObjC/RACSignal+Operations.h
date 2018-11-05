@@ -125,7 +125,7 @@ extern const NSInteger RACSignalErrorNoMatchingCase;
 /// of the receiver.
 - (RACSignal<ValueType> *)initially:(void (^)(void))block RAC_WARN_UNUSED_RESULT;
 
-/// Executes the given block when the signal completes or errors.
+/// Executes the given block when the signal completes, errs or the subscription is disposed.
 - (RACSignal<ValueType> *)finally:(void (^)(void))block RAC_WARN_UNUSED_RESULT;
 
 /// Divides the receiver's `next`s into buffers which deliver every `interval`
