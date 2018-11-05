@@ -14,26 +14,26 @@
 #pragma mark Lifecycle
 
 - (instancetype)initWithQueue:(dispatch_queue_t)queue {
-	return [super initWithName:nil queue:queue];
+  return [super initWithName:nil queue:queue];
 }
 
 #pragma mark RACScheduler
 
 - (RACDisposable *)schedule:(void (^)(void))block {
-	dispatch_async(self.queue, ^{
-		[self performAsCurrentScheduler:block];
-	});
+  dispatch_async(self.queue, ^{
+    [self performAsCurrentScheduler:block];
+  });
 
-	return nil;
+  return nil;
 }
 
 - (RACDisposable *)after:(NSDate *)date schedule:(void (^)(void))block {
-	dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)([date timeIntervalSinceNow] * NSEC_PER_SEC));
-	dispatch_after(when, self.queue, ^{
-		[self performAsCurrentScheduler:block];
-	});
+  dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)([date timeIntervalSinceNow] * NSEC_PER_SEC));
+  dispatch_after(when, self.queue, ^{
+    [self performAsCurrentScheduler:block];
+  });
 
-	return nil;
+  return nil;
 }
 
 @end

@@ -13,7 +13,7 @@
 @implementation UIDatePicker (RACSignalSupport)
 
 - (RACChannelTerminal *)rac_newDateChannelWithNilValue:(NSDate *)nilValue {
-	return [self rac_channelForControlEvents:UIControlEventValueChanged key:@rac_keypath(self.date) nilValue:nilValue];
+  return [self rac_channelForControlEvents:UIControlEventValueChanged key:@rac_keypath(self.date) nilValue:nilValue];
 }
 
 @end

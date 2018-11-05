@@ -10,8 +10,8 @@
 #import <Foundation/Foundation.h>
 
 typedef struct {
-	long long integerField;
-	double doubleField;
+  long long integerField;
+  double doubleField;
 } RACTestStruct;
 
 @protocol RACTestProtocol <NSObject>

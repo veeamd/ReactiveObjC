@@ -15,37 +15,37 @@
 QuickSpecBegin(RACBlockTrampolineSpec)
 
 qck_it(@"should invoke the block with the given arguments", ^{
-	__block NSString *stringArg;
-	__block NSNumber *numberArg;
-	id (^block)(NSString *, NSNumber *) = ^ id (NSString *string, NSNumber *number) {
-		stringArg = string;
-		numberArg = number;
-		return nil;
-	};
+  __block NSString *stringArg;
+  __block NSNumber *numberArg;
+  id (^block)(NSString *, NSNumber *) = ^ id (NSString *string, NSNumber *number) {
+    stringArg = string;
+    numberArg = number;
+    return nil;
+  };
 
-	RACInvokeBlock(block, RACTuplePack(@"hi", @1));
-	expect(stringArg).to(equal(@"hi"));
-	expect(numberArg).to(equal(@1));
+  RACInvokeBlock(block, RACTuplePack(@"hi", @1));
+  expect(stringArg).to(equal(@"hi"));
+  expect(numberArg).to(equal(@1));
 });
 
 qck_it(@"should return the result of the block invocation", ^{
-	NSString * (^block)(NSString *) = ^(NSString *string) {
-		return string.uppercaseString;
-	};
+  NSString * (^block)(NSString *) = ^(NSString *string) {
+    return string.uppercaseString;
+  };
 
-	NSString *result = RACInvokeBlock(block, RACTuplePack(@"hi"));
-	expect(result).to(equal(@"HI"));
+  NSString *result = RACInvokeBlock(block, RACTuplePack(@"hi"));
+  expect(result).to(equal(@"HI"));
 });
 
 qck_it(@"should pass RACTupleNils as nil", ^{
-	__block id arg;
-	id (^block)(id) = ^ id (id obj) {
-		arg = obj;
-		return nil;
-	};
+  __block id arg;
+  id (^block)(id) = ^ id (id obj) {
+    arg = obj;
+    return nil;
+  };
 
-	RACInvokeBlock(block, RACTuplePack(nil));
-	expect(arg).to(beNil());
+  RACInvokeBlock(block, RACTuplePack(nil));
+  expect(arg).to(beNil());
 });
 
 QuickSpecEnd

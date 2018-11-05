@@ -25,32 +25,32 @@ static void RACUseDelegateProxy(UITextView *self) {
 }
 
 - (RACDelegateProxy *)rac_delegateProxy {
-	RACDelegateProxy *proxy = objc_getAssociatedObject(self, _cmd);
-	if (proxy == nil) {
-		proxy = [[RACDelegateProxy alloc] initWithProtocol:@protocol(UITextViewDelegate)];
-		objc_setAssociatedObject(self, _cmd, proxy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-	}
+  RACDelegateProxy *proxy = objc_getAssociatedObject(self, _cmd);
+  if (proxy == nil) {
+    proxy = [[RACDelegateProxy alloc] initWithProtocol:@protocol(UITextViewDelegate)];
+    objc_setAssociatedObject(self, _cmd, proxy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  }
 
-	return proxy;
+  return proxy;
 }
 
 - (RACSignal *)rac_textSignal {
-	@rac_weakify(self);
-	RACSignal *signal = [[[[[RACSignal
-		defer:^{
-			@rac_strongify(self);
-			return [RACSignal return:RACTuplePack(self)];
-		}]
-		concat:[self.rac_delegateProxy signalForSelector:@selector(textViewDidChange:)]]
-		reduceEach:^(UITextView *x) {
-			return x.text;
-		}]
-		takeUntil:self.rac_willDeallocSignal]
-		setNameWithFormat:@"%@ -rac_textSignal", RACDescription(self)];
+  @rac_weakify(self);
+  RACSignal *signal = [[[[[RACSignal
+    defer:^{
+      @rac_strongify(self);
+      return [RACSignal return:RACTuplePack(self)];
+    }]
+    concat:[self.rac_delegateProxy signalForSelector:@selector(textViewDidChange:)]]
+    reduceEach:^(UITextView *x) {
+      return x.text;
+    }]
+    takeUntil:self.rac_willDeallocSignal]
+    setNameWithFormat:@"%@ -rac_textSignal", RACDescription(self)];
 
-	RACUseDelegateProxy(self);
+  RACUseDelegateProxy(self);
 
-	return signal;
+  return signal;
 }
 
 @end

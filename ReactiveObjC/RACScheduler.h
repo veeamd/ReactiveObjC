@@ -17,10 +17,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// RACSchedulerPriorityLow        - Low priority.
 /// RACSchedulerPriorityBackground - Background priority.
 typedef enum : long {
-	RACSchedulerPriorityHigh = DISPATCH_QUEUE_PRIORITY_HIGH,
-	RACSchedulerPriorityDefault = DISPATCH_QUEUE_PRIORITY_DEFAULT,
-	RACSchedulerPriorityLow = DISPATCH_QUEUE_PRIORITY_LOW,
-	RACSchedulerPriorityBackground = DISPATCH_QUEUE_PRIORITY_BACKGROUND,
+  RACSchedulerPriorityHigh = DISPATCH_QUEUE_PRIORITY_HIGH,
+  RACSchedulerPriorityDefault = DISPATCH_QUEUE_PRIORITY_DEFAULT,
+  RACSchedulerPriorityLow = DISPATCH_QUEUE_PRIORITY_LOW,
+  RACSchedulerPriorityBackground = DISPATCH_QUEUE_PRIORITY_BACKGROUND,
 } RACSchedulerPriority;
 
 /// Scheduled with -scheduleRecursiveBlock:, this type of block is passed a block

@@ -19,24 +19,24 @@
 QuickSpecBegin(UIButtonRACSupportSpec)
 
 qck_describe(@"UIButton", ^{
-	__block UIButton *button;
-	
-	qck_beforeEach(^{
-		button = [RACTestUIButton button];
-		expect(button).notTo(beNil());
-	});
+  __block UIButton *button;
+  
+  qck_beforeEach(^{
+    button = [RACTestUIButton button];
+    expect(button).notTo(beNil());
+  });
 
-	qck_itBehavesLike(RACControlCommandExamples, ^{
-		return @{
-			RACControlCommandExampleControl: button,
-			RACControlCommandExampleActivateBlock: ^(UIButton *button) {
-				#pragma clang diagnostic push
-				#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-				[button sendActionsForControlEvents:UIControlEventTouchUpInside];
-				#pragma clang diagnostic pop
-			}
-		};
-	});
+  qck_itBehavesLike(RACControlCommandExamples, ^{
+    return @{
+      RACControlCommandExampleControl: button,
+      RACControlCommandExampleActivateBlock: ^(UIButton *button) {
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        [button sendActionsForControlEvents:UIControlEventTouchUpInside];
+        #pragma clang diagnostic pop
+      }
+    };
+  });
 });
 
 QuickSpecEnd

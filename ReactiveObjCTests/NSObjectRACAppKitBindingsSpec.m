@@ -17,23 +17,23 @@
 QuickSpecBegin(NSObjectRACAppKitBindingsSpec)
 
 qck_itBehavesLike(RACViewChannelExamples, ^{
-	return @{
-		RACViewChannelExampleCreateViewBlock: ^{
-			return [[NSSlider alloc] initWithFrame:NSZeroRect];
-		},
-		RACViewChannelExampleCreateTerminalBlock: ^(NSSlider *view) {
-			return [view rac_channelToBinding:NSValueBinding];
-		},
-		RACViewChannelExampleKeyPath: @rac_keypath(NSSlider.new, objectValue),
-		RACViewChannelExampleSetViewValueBlock: ^(NSSlider *view, NSNumber *value) {
-			view.objectValue = value;
+  return @{
+    RACViewChannelExampleCreateViewBlock: ^{
+      return [[NSSlider alloc] initWithFrame:NSZeroRect];
+    },
+    RACViewChannelExampleCreateTerminalBlock: ^(NSSlider *view) {
+      return [view rac_channelToBinding:NSValueBinding];
+    },
+    RACViewChannelExampleKeyPath: @rac_keypath(NSSlider.new, objectValue),
+    RACViewChannelExampleSetViewValueBlock: ^(NSSlider *view, NSNumber *value) {
+      view.objectValue = value;
 
-			// Bindings don't actually trigger from programmatic modification. Do it
-			// manually.
-			NSDictionary *bindingInfo = [view infoForBinding:NSValueBinding];
-			[bindingInfo[NSObservedObjectKey] setValue:value forKeyPath:bindingInfo[NSObservedKeyPathKey]];
-		}
-	};
+      // Bindings don't actually trigger from programmatic modification. Do it
+      // manually.
+      NSDictionary *bindingInfo = [view infoForBinding:NSValueBinding];
+      [bindingInfo[NSObservedObjectKey] setValue:value forKeyPath:bindingInfo[NSObservedKeyPathKey]];
+    }
+  };
 });
 
 QuickSpecEnd

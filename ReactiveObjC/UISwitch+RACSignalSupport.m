@@ -13,7 +13,7 @@
 @implementation UISwitch (RACSignalSupport)
 
 - (RACChannelTerminal *)rac_newOnChannel {
-	return [self rac_channelForControlEvents:UIControlEventValueChanged key:@rac_keypath(self.on) nilValue:@NO];
+  return [self rac_channelForControlEvents:UIControlEventValueChanged key:@rac_keypath(self.on) nilValue:@NO];
 }
 
 @end
