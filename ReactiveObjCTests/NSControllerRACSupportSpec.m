@@ -25,23 +25,23 @@
 QuickSpecBegin(NSControllerRACSupportSpec)
 
 qck_it(@"RACKVOChannel should support NSController", ^{
-	RACTestController *a = [[RACTestController alloc] init];
-	RACTestController *b = [[RACTestController alloc] init];
-	RACChannelTo(a, object) = RACChannelTo(b, object);
-	expect(a.object).to(beNil());
-	expect(b.object).to(beNil());
+  RACTestController *a = [[RACTestController alloc] init];
+  RACTestController *b = [[RACTestController alloc] init];
+  RACChannelTo(a, object) = RACChannelTo(b, object);
+  expect(a.object).to(beNil());
+  expect(b.object).to(beNil());
 
-	a.object = a;
-	expect(a.object).to(equal(a));
-	expect(b.object).to(equal(a));
+  a.object = a;
+  expect(a.object).to(equal(a));
+  expect(b.object).to(equal(a));
 
-	b.object = b;
-	expect(a.object).to(equal(b));
-	expect(b.object).to(equal(b));
+  b.object = b;
+  expect(a.object).to(equal(b));
+  expect(b.object).to(equal(b));
 
-	a.object = nil;
-	expect(a.object).to(beNil());
-	expect(b.object).to(beNil());
+  a.object = nil;
+  expect(a.object).to(beNil());
+  expect(b.object).to(beNil());
 });
 
 QuickSpecEnd

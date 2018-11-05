@@ -23,27 +23,27 @@ static void RACUseDelegateProxy(UIActionSheet *self) {
 }
 
 - (RACDelegateProxy *)rac_delegateProxy {
-	RACDelegateProxy *proxy = objc_getAssociatedObject(self, _cmd);
-	if (proxy == nil) {
-		proxy = [[RACDelegateProxy alloc] initWithProtocol:@protocol(UIActionSheetDelegate)];
-		objc_setAssociatedObject(self, _cmd, proxy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-	}
+  RACDelegateProxy *proxy = objc_getAssociatedObject(self, _cmd);
+  if (proxy == nil) {
+    proxy = [[RACDelegateProxy alloc] initWithProtocol:@protocol(UIActionSheetDelegate)];
+    objc_setAssociatedObject(self, _cmd, proxy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  }
 
-	return proxy;
+  return proxy;
 }
 
 - (RACSignal *)rac_buttonClickedSignal {
-	RACSignal *signal = [[[[self.rac_delegateProxy
-		signalForSelector:@selector(actionSheet:clickedButtonAtIndex:)]
-		reduceEach:^(UIActionSheet *actionSheet, NSNumber *buttonIndex) {
-			return buttonIndex;
-		}]
-		takeUntil:self.rac_willDeallocSignal]
-		setNameWithFormat:@"%@ -rac_buttonClickedSignal", RACDescription(self)];
+  RACSignal *signal = [[[[self.rac_delegateProxy
+    signalForSelector:@selector(actionSheet:clickedButtonAtIndex:)]
+    reduceEach:^(UIActionSheet *actionSheet, NSNumber *buttonIndex) {
+      return buttonIndex;
+    }]
+    takeUntil:self.rac_willDeallocSignal]
+    setNameWithFormat:@"%@ -rac_buttonClickedSignal", RACDescription(self)];
 
-	RACUseDelegateProxy(self);
+  RACUseDelegateProxy(self);
 
-	return signal;
+  return signal;
 }
 
 @end

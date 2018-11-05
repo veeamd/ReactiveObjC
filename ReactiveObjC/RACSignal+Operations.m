@@ -1197,20 +1197,20 @@ static RACDisposable *subscribeForever (RACSignal *signal, void (^next)(id), voi
 - (RACSignal *)all:(BOOL (^)(id object))predicateBlock {
   NSCParameterAssert(predicateBlock != NULL);
 
-	return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
-		return [self subscribeNext:^(id x) {
-			if (!predicateBlock(x)) {
-				[subscriber sendNext:@NO];
-				[subscriber sendCompleted];
-			}
-		} error:^(NSError *error) {
-			[subscriber sendNext:@NO];
-			[subscriber sendCompleted];
-		} completed:^{
-			[subscriber sendNext:@YES];
-			[subscriber sendCompleted];
-		}];
-	}] setNameWithFormat:@"[%@] -all:", self.name];
+  return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    return [self subscribeNext:^(id x) {
+      if (!predicateBlock(x)) {
+        [subscriber sendNext:@NO];
+        [subscriber sendCompleted];
+      }
+    } error:^(NSError *error) {
+      [subscriber sendNext:@NO];
+      [subscriber sendCompleted];
+    } completed:^{
+      [subscriber sendNext:@YES];
+      [subscriber sendCompleted];
+    }];
+  }] setNameWithFormat:@"[%@] -all:", self.name];
 }
 
 - (RACSignal *)retry:(NSInteger)retryCount {
@@ -1329,20 +1329,20 @@ static RACDisposable *subscribeForever (RACSignal *signal, void (^next)(id), voi
 
 - (RACSignal *)dematerialize {
  return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
-	 return [self subscribeNext:^(RACEvent *event) {
-		 switch (event.eventType) {
-			 case RACEventTypeCompleted:
-				 [subscriber sendCompleted];
-			 case RACEventTypeError:
-				 [subscriber sendError:event.error];
-			 case RACEventTypeNext:
-				 [subscriber sendNext:event.value];
-		 }
-	 } error:^(NSError *error) {
-		 [subscriber sendError:error];
-	 } completed:^{
-		 [subscriber sendCompleted];
-	 }];
+   return [self subscribeNext:^(RACEvent *event) {
+     switch (event.eventType) {
+       case RACEventTypeCompleted:
+         [subscriber sendCompleted];
+       case RACEventTypeError:
+         [subscriber sendError:event.error];
+       case RACEventTypeNext:
+         [subscriber sendNext:event.value];
+     }
+   } error:^(NSError *error) {
+     [subscriber sendError:error];
+   } completed:^{
+     [subscriber sendCompleted];
+   }];
  }];
 }
 

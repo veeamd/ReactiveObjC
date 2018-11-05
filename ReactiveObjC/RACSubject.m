@@ -32,95 +32,95 @@
 #pragma mark Lifecycle
 
 + (instancetype)subject {
-	return [[self alloc] init];
+  return [[self alloc] init];
 }
 
 - (instancetype)init {
-	self = [super init];
-	if (self == nil) return nil;
+  self = [super init];
+  if (self == nil) return nil;
 
-	_disposable = [RACCompoundDisposable compoundDisposable];
-	_subscribers = [[NSMutableArray alloc] initWithCapacity:1];
-	
-	return self;
+  _disposable = [RACCompoundDisposable compoundDisposable];
+  _subscribers = [[NSMutableArray alloc] initWithCapacity:1];
+  
+  return self;
 }
 
 - (void)dealloc {
-	[self.disposable dispose];
+  [self.disposable dispose];
 }
 
 #pragma mark Subscription
 
 - (RACDisposable *)subscribe:(id<RACSubscriber>)subscriber {
-	NSCParameterAssert(subscriber != nil);
+  NSCParameterAssert(subscriber != nil);
 
-	RACCompoundDisposable *disposable = [RACCompoundDisposable compoundDisposable];
-	subscriber = [[RACPassthroughSubscriber alloc] initWithSubscriber:subscriber signal:self disposable:disposable];
+  RACCompoundDisposable *disposable = [RACCompoundDisposable compoundDisposable];
+  subscriber = [[RACPassthroughSubscriber alloc] initWithSubscriber:subscriber signal:self disposable:disposable];
 
-	NSMutableArray *subscribers = self.subscribers;
-	@synchronized (subscribers) {
-		[subscribers addObject:subscriber];
-	}
-	
-	[disposable addDisposable:[RACDisposable disposableWithBlock:^{
-		@synchronized (subscribers) {
-			// Since newer subscribers are generally shorter-lived, search
-			// starting from the end of the list.
-			NSUInteger index = [subscribers indexOfObjectWithOptions:NSEnumerationReverse passingTest:^ BOOL (id<RACSubscriber> obj, NSUInteger index, BOOL *stop) {
-				return obj == subscriber;
-			}];
+  NSMutableArray *subscribers = self.subscribers;
+  @synchronized (subscribers) {
+    [subscribers addObject:subscriber];
+  }
+  
+  [disposable addDisposable:[RACDisposable disposableWithBlock:^{
+    @synchronized (subscribers) {
+      // Since newer subscribers are generally shorter-lived, search
+      // starting from the end of the list.
+      NSUInteger index = [subscribers indexOfObjectWithOptions:NSEnumerationReverse passingTest:^ BOOL (id<RACSubscriber> obj, NSUInteger index, BOOL *stop) {
+        return obj == subscriber;
+      }];
 
-			if (index != NSNotFound) [subscribers removeObjectAtIndex:index];
-		}
-	}]];
+      if (index != NSNotFound) [subscribers removeObjectAtIndex:index];
+    }
+  }]];
 
-	return disposable;
+  return disposable;
 }
 
 - (void)enumerateSubscribersUsingBlock:(void (^)(id<RACSubscriber> subscriber))block {
-	NSArray *subscribers;
-	@synchronized (self.subscribers) {
-		subscribers = [self.subscribers copy];
-	}
+  NSArray *subscribers;
+  @synchronized (self.subscribers) {
+    subscribers = [self.subscribers copy];
+  }
 
-	for (id<RACSubscriber> subscriber in subscribers) {
-		block(subscriber);
-	}
+  for (id<RACSubscriber> subscriber in subscribers) {
+    block(subscriber);
+  }
 }
 
 #pragma mark RACSubscriber
 
 - (void)sendNext:(nullable id)value {
-	[self enumerateSubscribersUsingBlock:^(id<RACSubscriber> subscriber) {
-		[subscriber sendNext:value];
-	}];
+  [self enumerateSubscribersUsingBlock:^(id<RACSubscriber> subscriber) {
+    [subscriber sendNext:value];
+  }];
 }
 
 - (void)sendError:(NSError *)error {
-	[self.disposable dispose];
-	
-	[self enumerateSubscribersUsingBlock:^(id<RACSubscriber> subscriber) {
-		[subscriber sendError:error];
-	}];
+  [self.disposable dispose];
+  
+  [self enumerateSubscribersUsingBlock:^(id<RACSubscriber> subscriber) {
+    [subscriber sendError:error];
+  }];
 }
 
 - (void)sendCompleted {
-	[self.disposable dispose];
-	
-	[self enumerateSubscribersUsingBlock:^(id<RACSubscriber> subscriber) {
-		[subscriber sendCompleted];
-	}];
+  [self.disposable dispose];
+  
+  [self enumerateSubscribersUsingBlock:^(id<RACSubscriber> subscriber) {
+    [subscriber sendCompleted];
+  }];
 }
 
 - (void)didSubscribeWithDisposable:(RACCompoundDisposable *)d {
-	if (d.disposed) return;
-	[self.disposable addDisposable:d];
+  if (d.disposed) return;
+  [self.disposable addDisposable:d];
 
-	@rac_weakify(self, d);
-	[d addDisposable:[RACDisposable disposableWithBlock:^{
-		@rac_strongify(self, d);
-		[self.disposable removeDisposable:d];
-	}]];
+  @rac_weakify(self, d);
+  [d addDisposable:[RACDisposable disposableWithBlock:^{
+    @rac_strongify(self, d);
+    [self.disposable removeDisposable:d];
+  }]];
 }
 
 @end

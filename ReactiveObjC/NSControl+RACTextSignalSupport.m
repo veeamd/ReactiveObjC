@@ -16,23 +16,23 @@
 @implementation NSControl (RACTextSignalSupport)
 
 - (RACSignal *)rac_textSignal {
-	@rac_weakify(self);
-	return [[[[RACSignal
-		createSignal:^(id<RACSubscriber> subscriber) {
-			@rac_strongify(self);
-			id observer = [NSNotificationCenter.defaultCenter addObserverForName:NSControlTextDidChangeNotification object:self queue:nil usingBlock:^(NSNotification *note) {
-				[subscriber sendNext:note.object];
-			}];
+  @rac_weakify(self);
+  return [[[[RACSignal
+    createSignal:^(id<RACSubscriber> subscriber) {
+      @rac_strongify(self);
+      id observer = [NSNotificationCenter.defaultCenter addObserverForName:NSControlTextDidChangeNotification object:self queue:nil usingBlock:^(NSNotification *note) {
+        [subscriber sendNext:note.object];
+      }];
 
-			return [RACDisposable disposableWithBlock:^{
-				[NSNotificationCenter.defaultCenter removeObserver:observer];
-			}];
-		}]
-		map:^(NSControl *control) {
-			return [control.stringValue copy];
-		}]
-		startWith:[self.stringValue copy]]
-		setNameWithFormat:@"%@ -rac_textSignal", RACDescription(self)];
+      return [RACDisposable disposableWithBlock:^{
+        [NSNotificationCenter.defaultCenter removeObserver:observer];
+      }];
+    }]
+    map:^(NSControl *control) {
+      return [control.stringValue copy];
+    }]
+    startWith:[self.stringValue copy]]
+    setNameWithFormat:@"%@ -rac_textSignal", RACDescription(self)];
 }
 
 @end

@@ -18,22 +18,22 @@
 @implementation UITextField (RACSignalSupport)
 
 - (RACSignal *)rac_textSignal {
-	@rac_weakify(self);
-	return [[[[[RACSignal
-		defer:^{
-			@rac_strongify(self);
-			return [RACSignal return:self];
-		}]
-		concat:[self rac_signalForControlEvents:UIControlEventAllEditingEvents]]
-		map:^(UITextField *x) {
-			return x.text;
-		}]
-		takeUntil:self.rac_willDeallocSignal]
-		setNameWithFormat:@"%@ -rac_textSignal", RACDescription(self)];
+  @rac_weakify(self);
+  return [[[[[RACSignal
+    defer:^{
+      @rac_strongify(self);
+      return [RACSignal return:self];
+    }]
+    concat:[self rac_signalForControlEvents:UIControlEventAllEditingEvents]]
+    map:^(UITextField *x) {
+      return x.text;
+    }]
+    takeUntil:self.rac_willDeallocSignal]
+    setNameWithFormat:@"%@ -rac_textSignal", RACDescription(self)];
 }
 
 - (RACChannelTerminal *)rac_newTextChannel {
-	return [self rac_channelForControlEvents:UIControlEventAllEditingEvents key:@rac_keypath(self.text) nilValue:@""];
+  return [self rac_channelForControlEvents:UIControlEventAllEditingEvents key:@rac_keypath(self.text) nilValue:@""];
 }
 
 @end

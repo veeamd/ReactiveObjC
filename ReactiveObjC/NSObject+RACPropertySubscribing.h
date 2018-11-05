@@ -48,8 +48,8 @@
 /// completed if self or observer is deallocated.
 #define _RACObserve(TARGET, KEYPATH) \
 ({ \
-	__weak id target_ = (TARGET); \
-	[target_ rac_valuesForKeyPath:@rac_keypath(TARGET, KEYPATH) observer:self]; \
+  __weak id target_ = (TARGET); \
+  [target_ rac_valuesForKeyPath:@rac_keypath(TARGET, KEYPATH) observer:self]; \
 })
 
 #if __clang__ && (__clang_major__ >= 8)
@@ -57,10 +57,10 @@
 #else
 #define RACObserve(TARGET, KEYPATH) \
 ({ \
-	_Pragma("clang diagnostic push") \
-	_Pragma("clang diagnostic ignored \"-Wreceiver-is-weak\"") \
-	_RACObserve(TARGET, KEYPATH) \
-	_Pragma("clang diagnostic pop") \
+  _Pragma("clang diagnostic push") \
+  _Pragma("clang diagnostic ignored \"-Wreceiver-is-weak\"") \
+  _RACObserve(TARGET, KEYPATH) \
+  _Pragma("clang diagnostic pop") \
 })
 #endif
 
@@ -106,15 +106,15 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 #define RACAble(...) \
-	metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__)) \
-		(_RACAbleObject(self, __VA_ARGS__)) \
-		(_RACAbleObject(__VA_ARGS__))
+  metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__)) \
+    (_RACAbleObject(self, __VA_ARGS__)) \
+    (_RACAbleObject(__VA_ARGS__))
 
 #define _RACAbleObject(object, property) [object rac_signalForKeyPath:@rac_keypath(object, property) observer:self]
 
 #define RACAbleWithStart(...) \
-	metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__)) \
-		(_RACAbleWithStartObject(self, __VA_ARGS__)) \
-		(_RACAbleWithStartObject(__VA_ARGS__))
+  metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__)) \
+    (_RACAbleWithStartObject(self, __VA_ARGS__)) \
+    (_RACAbleWithStartObject(__VA_ARGS__))
 
 #define _RACAbleWithStartObject(object, property) [object rac_signalWithStartingValueForKeyPath:@rac_keypath(object, property) observer:self]

@@ -12,27 +12,27 @@
 @implementation RACSubclassObject
 
 - (void)forwardInvocation:(NSInvocation *)invocation {
-	self.forwardedSelector = invocation.selector;
+  self.forwardedSelector = invocation.selector;
 }
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)selector {
-	NSParameterAssert(selector != NULL);
+  NSParameterAssert(selector != NULL);
 
-	NSMethodSignature *signature = [super methodSignatureForSelector:selector];
-	if (signature != nil) return signature;
+  NSMethodSignature *signature = [super methodSignatureForSelector:selector];
+  if (signature != nil) return signature;
 
-	return [super methodSignatureForSelector:@selector(description)];
+  return [super methodSignatureForSelector:@selector(description)];
 }
 
 - (NSString *)combineObjectValue:(id)objectValue andIntegerValue:(NSInteger)integerValue {
-	NSString *appended = [[objectValue description] stringByAppendingString:@"SUBCLASS"];
-	return [super combineObjectValue:appended andIntegerValue:integerValue];
+  NSString *appended = [[objectValue description] stringByAppendingString:@"SUBCLASS"];
+  return [super combineObjectValue:appended andIntegerValue:integerValue];
 }
 
 - (void)setObjectValue:(id)objectValue andSecondObjectValue:(id)secondObjectValue {
-	[RACScheduler.currentScheduler schedule:^{
-		[super setObjectValue:objectValue andSecondObjectValue:secondObjectValue];
-	}];
+  [RACScheduler.currentScheduler schedule:^{
+    [super setObjectValue:objectValue andSecondObjectValue:secondObjectValue];
+  }];
 }
 
 @end

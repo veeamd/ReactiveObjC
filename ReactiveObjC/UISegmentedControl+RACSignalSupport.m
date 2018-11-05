@@ -13,7 +13,7 @@
 @implementation UISegmentedControl (RACSignalSupport)
 
 - (RACChannelTerminal *)rac_newSelectedSegmentIndexChannelWithNilValue:(NSNumber *)nilValue {
-	return [self rac_channelForControlEvents:UIControlEventValueChanged key:@rac_keypath(self.selectedSegmentIndex) nilValue:nilValue];
+  return [self rac_channelForControlEvents:UIControlEventValueChanged key:@rac_keypath(self.selectedSegmentIndex) nilValue:nilValue];
 }
 
 @end

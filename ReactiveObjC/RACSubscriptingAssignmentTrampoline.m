@@ -22,21 +22,21 @@
 @implementation RACSubscriptingAssignmentTrampoline
 
 - (instancetype)initWithTarget:(id)target nilValue:(id)nilValue {
-	// This is often a programmer error, but this prevents crashes if the target
-	// object has unexpectedly deallocated.
-	if (target == nil) return nil;
+  // This is often a programmer error, but this prevents crashes if the target
+  // object has unexpectedly deallocated.
+  if (target == nil) return nil;
 
-	self = [super init];
-	if (self == nil) return nil;
+  self = [super init];
+  if (self == nil) return nil;
 
-	_target = target;
-	_nilValue = nilValue;
+  _target = target;
+  _nilValue = nilValue;
 
-	return self;
+  return self;
 }
 
 - (void)setObject:(RACSignal *)signal forKeyedSubscript:(NSString *)keyPath {
-	[signal setKeyPath:keyPath onObject:self.target nilValue:self.nilValue];
+  [signal setKeyPath:keyPath onObject:self.target nilValue:self.nilValue];
 }
 
 @end

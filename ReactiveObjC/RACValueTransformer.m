@@ -19,7 +19,7 @@
 #pragma mark NSValueTransformer
 
 + (BOOL)allowsReverseTransformation {
-	return NO;
+  return NO;
 }
 
 - (id)transformedValue:(id)value {
@@ -32,11 +32,11 @@
 @synthesize transformBlock;
 
 + (instancetype)transformerWithBlock:(id (^)(id value))block {
-	NSCParameterAssert(block != NULL);
-	
-	RACValueTransformer *transformer = [[self alloc] init];
-	transformer.transformBlock = block;
-	return transformer;
+  NSCParameterAssert(block != NULL);
+  
+  RACValueTransformer *transformer = [[self alloc] init];
+  transformer.transformBlock = block;
+  return transformer;
 }
 
 @end

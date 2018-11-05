@@ -27,85 +27,85 @@
 #pragma mark Lifecycle
 
 + (instancetype)subscriberWithNext:(void (^)(id x))next error:(void (^)(NSError *error))error completed:(void (^)(void))completed {
-	RACSubscriber *subscriber = [[self alloc] init];
+  RACSubscriber *subscriber = [[self alloc] init];
 
-	subscriber->_next = [next copy];
-	subscriber->_error = [error copy];
-	subscriber->_completed = [completed copy];
+  subscriber->_next = [next copy];
+  subscriber->_error = [error copy];
+  subscriber->_completed = [completed copy];
 
-	return subscriber;
+  return subscriber;
 }
 
 - (instancetype)init {
-	self = [super init];
+  self = [super init];
 
-	@rac_unsafeify(self);
+  @rac_unsafeify(self);
 
-	RACDisposable *selfDisposable = [RACDisposable disposableWithBlock:^{
-		@rac_strongify(self);
+  RACDisposable *selfDisposable = [RACDisposable disposableWithBlock:^{
+    @rac_strongify(self);
 
-		@synchronized (self) {
-			self.next = nil;
-			self.error = nil;
-			self.completed = nil;
-		}
-	}];
+    @synchronized (self) {
+      self.next = nil;
+      self.error = nil;
+      self.completed = nil;
+    }
+  }];
 
-	_disposable = [RACCompoundDisposable compoundDisposable];
-	[_disposable addDisposable:selfDisposable];
+  _disposable = [RACCompoundDisposable compoundDisposable];
+  [_disposable addDisposable:selfDisposable];
 
-	return self;
+  return self;
 }
 
 - (void)dealloc {
-	[self.disposable dispose];
+  [self.disposable dispose];
 }
 
 #pragma mark RACSubscriber
 
 - (void)sendNext:(id)value {
-	@synchronized (self) {
-		void (^nextBlock)(id) = [self.next copy];
-		if (nextBlock == nil) return;
+  @synchronized (self) {
+    void (^nextBlock)(id) = [self.next copy];
+    if (nextBlock == nil) return;
 
-		nextBlock(value);
-	}
+    nextBlock(value);
+  }
 }
 
 - (void)sendError:(NSError *)e {
-	@synchronized (self) {
-		void (^errorBlock)(NSError *) = [self.error copy];
-		[self.disposable dispose];
+  @synchronized (self) {
+    void (^errorBlock)(NSError *) = [self.error copy];
+    [self.disposable dispose];
 
-		if (errorBlock == nil) return;
-		errorBlock(e);
-	}
+    if (errorBlock == nil) return;
+    errorBlock(e);
+  }
 }
 
 - (void)sendCompleted {
-	@synchronized (self) {
-		void (^completedBlock)(void) = [self.completed copy];
-		[self.disposable dispose];
+  @synchronized (self) {
+    void (^completedBlock)(void) = [self.completed copy];
+    [self.disposable dispose];
 
-		if (completedBlock == nil) return;
-		completedBlock();
-	}
+    if (completedBlock == nil) return;
+    completedBlock();
+  }
 }
 
 - (void)didSubscribeWithDisposable:(RACCompoundDisposable *)otherDisposable {
-	if (otherDisposable.disposed) return;
+  if (otherDisposable.disposed) return;
 
-	RACCompoundDisposable *selfDisposable = self.disposable;
-	[selfDisposable addDisposable:otherDisposable];
+  RACCompoundDisposable *selfDisposable = self.disposable;
+  [selfDisposable addDisposable:otherDisposable];
 
-	@rac_unsafeify(otherDisposable);
+  @rac_unsafeify(otherDisposable);
 
-	// If this subscription terminates, purge its disposable to avoid unbounded
-	// memory growth.
-	[otherDisposable addDisposable:[RACDisposable disposableWithBlock:^{
-		@rac_strongify(otherDisposable);
-		[selfDisposable removeDisposable:otherDisposable];
-	}]];
+  // If this subscription terminates, purge its disposable to avoid unbounded
+  // memory growth.
+  [otherDisposable addDisposable:[RACDisposable disposableWithBlock:^{
+    @rac_strongify(otherDisposable);
+    [selfDisposable removeDisposable:otherDisposable];
+  }]];
 }
 
 @end

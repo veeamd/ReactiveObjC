@@ -17,9 +17,9 @@
 #pragma mark API
 
 + (instancetype)signalWithKey:(id<NSCopying>)key {
-	RACGroupedSignal *subject = [self subject];
-	subject.key = key;
-	return subject;
+  RACGroupedSignal *subject = [self subject];
+  subject.key = key;
+  return subject;
 }
 
 @end
