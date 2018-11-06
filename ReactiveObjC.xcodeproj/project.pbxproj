@@ -1176,7 +1176,7 @@
 				8B2B786D1F3780C300156B00 /* Frameworks */,
 			);
 			sourceTree = "<group>";
-			usesTabs = 1;
+			usesTabs = 0;
 		};
 		D04725EB19E49ED7006002AA /* Products */ = {
 			isa = PBXGroup;
