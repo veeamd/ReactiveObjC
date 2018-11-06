@@ -72,12 +72,26 @@ qck_describe(@"RACSubject", ^{
   });
 
   qck_it(@"should dispose the paired disposable when a subscription terminates", ^{
-    RACSubject* subject = [RACSubject new];
-    RACTestSubscriber* subscriber = [RACTestSubscriber new];
+    RACSubject *subject = [RACSubject new];
+    RACTestSubscriber *subscriber = [RACTestSubscriber new];
 
     [[subject subscribe:subscriber] dispose];
 
     expect(@(subscriber.disposable.disposed)).to(beTruthy());
+  });
+
+  qck_it(@"should release the subscriber after subject deallocation", ^{
+    __weak RACTestSubscriber *weakSubscriber;
+
+    @autoreleasepool {
+      RACTestSubscriber *subscriber = [RACTestSubscriber new];
+      weakSubscriber = subscriber;
+      RACSubject *subject = [RACSubject subject];
+
+      [subject subscribe:subscriber];
+    }
+
+    expect(weakSubscriber).to(beNil());
   });
 
   qck_itBehavesLike(RACSubscriberExamples, ^{
