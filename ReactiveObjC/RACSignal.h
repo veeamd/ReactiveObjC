@@ -394,34 +394,34 @@ typedef RACSignal * _Nullable (^RACSignalBindBlock)(ValueType _Nullable value, B
 /// need to end your subscription before it would "naturally" end, either by
 /// completing or erroring. Once the disposable has been disposed, the subscriber
 /// won't receive any more events from the subscription.
-- (RACDisposable *)subscribe:(id<RACSubscriber>)subscriber;
+- (nullable RACDisposable *)subscribe:(id<RACSubscriber>)subscriber;
 
 /// Convenience method to subscribe to the `next` event.
 ///
 /// This corresponds to `IObserver<T>.OnNext` in Rx.
-- (RACDisposable *)subscribeNext:(void (^)(ValueType _Nullable x))nextBlock;
+- (nullable RACDisposable *)subscribeNext:(void (^)(ValueType _Nullable x))nextBlock;
 
 /// Convenience method to subscribe to the `next` and `completed` events.
-- (RACDisposable *)subscribeNext:(void (^)(ValueType _Nullable x))nextBlock completed:(void (^)(void))completedBlock;
+- (nullable RACDisposable *)subscribeNext:(void (^)(ValueType _Nullable x))nextBlock completed:(void (^)(void))completedBlock;
 
 /// Convenience method to subscribe to the `next`, `completed`, and `error` events.
-- (RACDisposable *)subscribeNext:(void (^)(ValueType _Nullable x))nextBlock error:(void (^)(NSError * _Nullable error))errorBlock completed:(void (^)(void))completedBlock;
+- (nullable RACDisposable *)subscribeNext:(void (^)(ValueType _Nullable x))nextBlock error:(void (^)(NSError * _Nullable error))errorBlock completed:(void (^)(void))completedBlock;
 
 /// Convenience method to subscribe to `error` events.
 ///
 /// This corresponds to the `IObserver<T>.OnError` in Rx.
-- (RACDisposable *)subscribeError:(void (^)(NSError * _Nullable error))errorBlock;
+- (nullable RACDisposable *)subscribeError:(void (^)(NSError * _Nullable error))errorBlock;
 
 /// Convenience method to subscribe to `completed` events.
 ///
 /// This corresponds to the `IObserver<T>.OnCompleted` in Rx.
-- (RACDisposable *)subscribeCompleted:(void (^)(void))completedBlock;
+- (nullable RACDisposable *)subscribeCompleted:(void (^)(void))completedBlock;
 
 /// Convenience method to subscribe to `next` and `error` events.
-- (RACDisposable *)subscribeNext:(void (^)(ValueType _Nullable x))nextBlock error:(void (^)(NSError * _Nullable error))errorBlock;
+- (nullable RACDisposable *)subscribeNext:(void (^)(ValueType _Nullable x))nextBlock error:(void (^)(NSError * _Nullable error))errorBlock;
 
 /// Convenience method to subscribe to `error` and `completed` events.
-- (RACDisposable *)subscribeError:(void (^)(NSError * _Nullable error))errorBlock completed:(void (^)(void))completedBlock;
+- (nullable RACDisposable *)subscribeError:(void (^)(NSError * _Nullable error))errorBlock completed:(void (^)(void))completedBlock;
 
 @end
 

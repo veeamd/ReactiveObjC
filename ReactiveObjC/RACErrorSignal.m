@@ -36,7 +36,7 @@
 
 #pragma mark Subscription
 
-- (RACDisposable *)subscribe:(id<RACSubscriber>)subscriber {
+- (nullable RACDisposable *)subscribe:(id<RACSubscriber>)subscriber {
   NSCParameterAssert(subscriber != nil);
 
   return [RACScheduler.subscriptionScheduler schedule:^{

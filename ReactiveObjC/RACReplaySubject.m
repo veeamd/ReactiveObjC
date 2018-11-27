@@ -51,7 +51,7 @@ const NSUInteger RACReplaySubjectUnlimitedCapacity = NSUIntegerMax;
 
 #pragma mark RACSignal
 
-- (RACDisposable *)subscribe:(id<RACSubscriber>)subscriber {
+- (nullable RACDisposable *)subscribe:(id<RACSubscriber>)subscriber {
   RACCompoundDisposable *compoundDisposable = [RACCompoundDisposable compoundDisposable];
 
   RACDisposable *schedulingDisposable = [RACScheduler.subscriptionScheduler schedule:^{

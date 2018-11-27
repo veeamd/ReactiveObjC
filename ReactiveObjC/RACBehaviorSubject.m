@@ -29,7 +29,7 @@
 
 #pragma mark RACSignal
 
-- (RACDisposable *)subscribe:(id<RACSubscriber>)subscriber {
+- (nullable RACDisposable *)subscribe:(id<RACSubscriber>)subscriber {
   RACDisposable *subscriptionDisposable = [super subscribe:subscriber];
 
   RACDisposable *schedulingDisposable = [RACScheduler.subscriptionScheduler schedule:^{
