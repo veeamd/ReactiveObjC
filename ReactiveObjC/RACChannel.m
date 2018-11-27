@@ -63,7 +63,7 @@
 
 #pragma mark RACSignal
 
-- (RACDisposable *)subscribe:(id<RACSubscriber>)subscriber {
+- (nullable RACDisposable *)subscribe:(id<RACSubscriber>)subscriber {
   return [self.values subscribe:subscriber];
 }
 

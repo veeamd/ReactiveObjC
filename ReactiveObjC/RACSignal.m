@@ -556,19 +556,19 @@
 
 @implementation RACSignal (Subscription)
 
-- (RACDisposable *)subscribe:(id<RACSubscriber>)subscriber {
+- (nullable RACDisposable *)subscribe:(id<RACSubscriber>)subscriber {
   NSCAssert(NO, @"This method must be overridden by subclasses");
   return nil;
 }
 
-- (RACDisposable *)subscribeNext:(void (^)(id x))nextBlock {
+- (nullable RACDisposable *)subscribeNext:(void (^)(id x))nextBlock {
   NSCParameterAssert(nextBlock != NULL);
   
   RACSubscriber *o = [RACSubscriber subscriberWithNext:nextBlock error:NULL completed:NULL];
   return [self subscribe:o];
 }
 
-- (RACDisposable *)subscribeNext:(void (^)(id x))nextBlock completed:(void (^)(void))completedBlock {
+- (nullable RACDisposable *)subscribeNext:(void (^)(id x))nextBlock completed:(void (^)(void))completedBlock {
   NSCParameterAssert(nextBlock != NULL);
   NSCParameterAssert(completedBlock != NULL);
   
@@ -576,7 +576,7 @@
   return [self subscribe:o];
 }
 
-- (RACDisposable *)subscribeNext:(void (^)(id x))nextBlock error:(void (^)(NSError *error))errorBlock completed:(void (^)(void))completedBlock {
+- (nullable RACDisposable *)subscribeNext:(void (^)(id x))nextBlock error:(void (^)(NSError *error))errorBlock completed:(void (^)(void))completedBlock {
   NSCParameterAssert(nextBlock != NULL);
   NSCParameterAssert(errorBlock != NULL);
   NSCParameterAssert(completedBlock != NULL);
@@ -585,21 +585,21 @@
   return [self subscribe:o];
 }
 
-- (RACDisposable *)subscribeError:(void (^)(NSError *error))errorBlock {
+- (nullable RACDisposable *)subscribeError:(void (^)(NSError *error))errorBlock {
   NSCParameterAssert(errorBlock != NULL);
   
   RACSubscriber *o = [RACSubscriber subscriberWithNext:NULL error:errorBlock completed:NULL];
   return [self subscribe:o];
 }
 
-- (RACDisposable *)subscribeCompleted:(void (^)(void))completedBlock {
+- (nullable RACDisposable *)subscribeCompleted:(void (^)(void))completedBlock {
   NSCParameterAssert(completedBlock != NULL);
   
   RACSubscriber *o = [RACSubscriber subscriberWithNext:NULL error:NULL completed:completedBlock];
   return [self subscribe:o];
 }
 
-- (RACDisposable *)subscribeNext:(void (^)(id x))nextBlock error:(void (^)(NSError *error))errorBlock {
+- (nullable RACDisposable *)subscribeNext:(void (^)(id x))nextBlock error:(void (^)(NSError *error))errorBlock {
   NSCParameterAssert(nextBlock != NULL);
   NSCParameterAssert(errorBlock != NULL);
   
@@ -607,7 +607,7 @@
   return [self subscribe:o];
 }
 
-- (RACDisposable *)subscribeError:(void (^)(NSError *))errorBlock completed:(void (^)(void))completedBlock {
+- (nullable RACDisposable *)subscribeError:(void (^)(NSError *))errorBlock completed:(void (^)(void))completedBlock {
   NSCParameterAssert(completedBlock != NULL);
   NSCParameterAssert(errorBlock != NULL);
   
