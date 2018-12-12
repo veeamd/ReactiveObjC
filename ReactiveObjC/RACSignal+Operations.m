@@ -854,7 +854,7 @@ static RACDisposable *subscribeForever (RACSignal *signal, void (^next)(id), voi
 - (RACSignal *)switchToLatest {
   return [[RACSignal createSignal:^(id<RACSubscriber> subscriber) {
     __block BOOL outerCompleted = NO;
-    __block BOOL innerCompleted = NO;
+    __block BOOL innerCompleted = YES;
     __block NSUInteger currentInnerIndex = 0;
 
     RACSerialDisposable *innerDisposable = [[RACSerialDisposable alloc] init];
