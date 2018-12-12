@@ -1985,6 +1985,13 @@ qck_describe(@"-switchToLatest", ^{
     expect(@(completed)).to(beTruthy());
   });
 
+  qck_it(@"should send completed when the switching signal completes and no signal is sent", ^{
+    expect(@(completed)).to(beFalsy());
+
+    [subject sendCompleted];
+    expect(@(completed)).to(beTruthy());
+  });
+
   qck_it(@"should dispose previous inner signal before subscribing to new inner signal", ^{
     RACSubject *otherSignal = [RACSubject subject];
     RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
