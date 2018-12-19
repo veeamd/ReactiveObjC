@@ -13,6 +13,7 @@
 #import "RACEmptySignal.h"
 #import "RACErrorSignal.h"
 #import "RACMulticastConnection.h"
+#import "RACNeverSignal.h"
 #import "NSObject+RACDescription.h"
 #import "RACReplaySubject.h"
 #import "RACReturnSignal.h"
@@ -37,9 +38,7 @@
 }
 
 + (RACSignal *)never {
-  return [[self createSignal:^ RACDisposable * (id<RACSubscriber> subscriber) {
-    return nil;
-  }] setNameWithFormat:@"+never"];
+  return [RACNeverSignal never];
 }
 
 + (RACSignal *)startEagerlyWithScheduler:(RACScheduler *)scheduler block:(void (^)(id<RACSubscriber> subscriber))block {

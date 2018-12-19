@@ -3820,6 +3820,19 @@ qck_describe(@"-finally:", ^{
       expect(@(finallyInvoked)).to(beTruthy());
     });
   });
+
+  qck_it(@"should not call finally on never signal without disposal", ^{
+    __block BOOL finallyInvoked = NO;
+    RACDisposable *disposable = [[[RACSignal never] finally:^{
+      finallyInvoked = YES;
+    }] subscribeNext:^(id x) {}];
+
+    expect(@(finallyInvoked)).to(beFalsy());
+
+    [disposable dispose];
+
+    expect(@(finallyInvoked)).to(beTruthy());
+  });
 });
 
 qck_describe(@"-ignoreValues", ^{
