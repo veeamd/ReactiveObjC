@@ -315,13 +315,7 @@ static RACDisposable *subscribeForever (RACSignal *signal, void (^next)(id), voi
   NSCParameterAssert(block != NULL);
 
   return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
-    RACDisposable *selfDisposable = [self subscribeNext:^(id x) {
-      [subscriber sendNext:x];
-    } error:^(NSError *error) {
-      [subscriber sendError:error];
-    } completed:^{
-      [subscriber sendCompleted];
-    }];
+    RACDisposable *selfDisposable = [self subscribe:subscriber];
 
     return [RACDisposable disposableWithBlock:^{
       block();
