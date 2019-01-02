@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// WARNING: Under certain conditions, use of this macro can be thread-unsafe.
 ///          See the documentation of -setKeyPath:onObject:nilValue:.
 #define RAC(TARGET, ...) \
-    metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__)) \
+    rac_metamacro_if_eq(1, rac_metamacro_argcount(__VA_ARGS__)) \
         (RAC_(TARGET, __VA_ARGS__, nil)) \
         (RAC_(TARGET, __VA_ARGS__))
 

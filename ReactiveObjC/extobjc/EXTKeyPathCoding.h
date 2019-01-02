@@ -42,7 +42,7 @@ NSString *lowercaseStringPath = @rac_keypath(NSString.new, lowercaseString);
     _Pragma("clang diagnostic pop") \
 
 #define rac_cStringKeypath(...) \
-    metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__))(rac_keypath1(__VA_ARGS__))(rac_keypath2(__VA_ARGS__))
+    rac_metamacro_if_eq(1, rac_metamacro_argcount(__VA_ARGS__))(rac_keypath1(__VA_ARGS__))(rac_keypath2(__VA_ARGS__))
 
 #define rac_keypath1(PATH) \
     (((void)(NO && ((void)PATH, NO)), strchr(# PATH, '.') + 1))
@@ -66,7 +66,7 @@ NSString *lowercaseStringPath = @rac_keypath(NSString.new, lowercaseString);
  *
  */
 #define rac_collectionKeypath(...) \
-    metamacro_if_eq(3, metamacro_argcount(__VA_ARGS__))(rac_collectionKeypath3(__VA_ARGS__))(rac_collectionKeypath4(__VA_ARGS__))
+    rac_metamacro_if_eq(3, rac_metamacro_argcount(__VA_ARGS__))(rac_collectionKeypath3(__VA_ARGS__))(rac_collectionKeypath4(__VA_ARGS__))
 
 #define rac_collectionKeypath3(PATH, COLLECTION_OBJECT, COLLECTION_PATH) \
     (YES).boolValue ? (NSString * _Nonnull)@((const char * _Nonnull)[[NSString stringWithFormat:@"%s.%s", rac_cStringKeypath(PATH), rac_cStringKeypath(COLLECTION_OBJECT, COLLECTION_PATH)] UTF8String]) : (NSString * _Nonnull)nil

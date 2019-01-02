@@ -52,7 +52,7 @@
 ///  RACChannelTo(view, objectProperty) = RACChannelTo(model, objectProperty);
 ///  RACChannelTo(view, integerProperty, @2) = RACChannelTo(model, integerProperty, @10);
 #define RACChannelTo(TARGET, ...) \
-    metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__)) \
+    rac_metamacro_if_eq(1, rac_metamacro_argcount(__VA_ARGS__)) \
         (RACChannelTo_(TARGET, __VA_ARGS__, nil)) \
         (RACChannelTo_(TARGET, __VA_ARGS__))
 
