@@ -106,14 +106,14 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 #define RACAble(...) \
-  metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__)) \
+  rac_metamacro_if_eq(1, rac_metamacro_argcount(__VA_ARGS__)) \
     (_RACAbleObject(self, __VA_ARGS__)) \
     (_RACAbleObject(__VA_ARGS__))
 
 #define _RACAbleObject(object, property) [object rac_signalForKeyPath:@rac_keypath(object, property) observer:self]
 
 #define RACAbleWithStart(...) \
-  metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__)) \
+  rac_metamacro_if_eq(1, rac_metamacro_argcount(__VA_ARGS__)) \
     (_RACAbleWithStartObject(self, __VA_ARGS__)) \
     (_RACAbleWithStartObject(__VA_ARGS__))
 

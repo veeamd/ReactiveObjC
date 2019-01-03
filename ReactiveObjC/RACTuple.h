@@ -198,7 +198,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// See RACTuplePack() and RACTupleUnpack() instead.
 #define RACTuplePack_(...) \
-    ([RACTuplePack_class_name(__VA_ARGS__) tupleWithObjectsFromArray:@[ metamacro_foreach(RACTuplePack_object_or_ractuplenil,, __VA_ARGS__) ]])
+    ([RACTuplePack_class_name(__VA_ARGS__) tupleWithObjectsFromArray:@[ rac_metamacro_foreach(RACTuplePack_object_or_ractuplenil,, __VA_ARGS__) ]])
 
 #define RACTuplePack_object_or_ractuplenil(INDEX, ARG) \
     (ARG) ?: RACTupleNil.tupleNil,
@@ -206,16 +206,16 @@ NS_ASSUME_NONNULL_BEGIN
 /// Returns the class that should be used to create a tuple with the provided
 /// variadic arguments to RACTuplePack_(). Supports up to 20 arguments.
 #define RACTuplePack_class_name(...) \
-        metamacro_at(20, __VA_ARGS__, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACFiveTuple, RACFourTuple, RACThreeTuple, RACTwoTuple, RACOneTuple)
+        rac_metamacro_at(20, __VA_ARGS__, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACTuple, RACFiveTuple, RACFourTuple, RACThreeTuple, RACTwoTuple, RACOneTuple)
 
 #define RACTupleUnpack_(...) \
-    metamacro_foreach(RACTupleUnpack_decl,, __VA_ARGS__) \
+    rac_metamacro_foreach(RACTupleUnpack_decl,, __VA_ARGS__) \
     \
     int RACTupleUnpack_state = 0; \
     \
     RACTupleUnpack_after: \
         ; \
-        metamacro_foreach(RACTupleUnpack_assign,, __VA_ARGS__) \
+        rac_metamacro_foreach(RACTupleUnpack_assign,, __VA_ARGS__) \
         if (RACTupleUnpack_state != 0) RACTupleUnpack_state = 2; \
         \
         while (RACTupleUnpack_state != 2) \
@@ -223,14 +223,14 @@ NS_ASSUME_NONNULL_BEGIN
                 goto RACTupleUnpack_after; \
             } else \
                 for (; RACTupleUnpack_state != 1; RACTupleUnpack_state = 1) \
-                    [RACTupleUnpackingTrampoline trampoline][ @[ metamacro_foreach(RACTupleUnpack_value,, __VA_ARGS__) ] ]
+                    [RACTupleUnpackingTrampoline trampoline][ @[ rac_metamacro_foreach(RACTupleUnpack_value,, __VA_ARGS__) ] ]
 
-#define RACTupleUnpack_state metamacro_concat(RACTupleUnpack_state, __LINE__)
-#define RACTupleUnpack_after metamacro_concat(RACTupleUnpack_after, __LINE__)
-#define RACTupleUnpack_loop metamacro_concat(RACTupleUnpack_loop, __LINE__)
+#define RACTupleUnpack_state rac_metamacro_concat(RACTupleUnpack_state, __LINE__)
+#define RACTupleUnpack_after rac_metamacro_concat(RACTupleUnpack_after, __LINE__)
+#define RACTupleUnpack_loop rac_metamacro_concat(RACTupleUnpack_loop, __LINE__)
 
 #define RACTupleUnpack_decl_name(INDEX) \
-    metamacro_concat(metamacro_concat(RACTupleUnpack, __LINE__), metamacro_concat(_var, INDEX))
+    rac_metamacro_concat(rac_metamacro_concat(RACTupleUnpack, __LINE__), rac_metamacro_concat(_var, INDEX))
 
 #define RACTupleUnpack_decl(INDEX, ARG) \
     __strong id RACTupleUnpack_decl_name(INDEX);
