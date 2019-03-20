@@ -186,6 +186,27 @@ qck_describe(@"RACReplaySubject", ^{
 
       expect(@(errorSent)).to(beTruthy());
     });
+
+    qck_it(@"should receive first values when using take: while in subscribeNext:", ^{
+      id firstValue = @"blah";
+      id secondValue = @"more blah";
+
+      NSMutableArray *outerValues = [NSMutableArray array];
+      NSMutableArray *innerValues = [NSMutableArray array];
+
+      [subject subscribeNext:^(id outerValue) {
+        [outerValues addObject:outerValue];
+        [[subject take:1] subscribeNext:^(id innerValue) {
+          [innerValues addObject:innerValue];
+        }];
+      }];
+
+      [subject sendNext:firstValue];
+      [subject sendNext:secondValue];
+
+      expect(outerValues).to(equal(@[firstValue, secondValue]));
+      expect(innerValues).to(equal(@[firstValue, secondValue]));
+    });
   });
 
   qck_describe(@"with an unlimited capacity", ^{
@@ -319,7 +340,7 @@ qck_describe(@"RACReplaySubject", ^{
       [subject sendNext:@1];
 
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        __block RACDisposable *disposable = [subject subscribeNext:^(id x) {
+        __block RACDisposable * _Nullable disposable = [subject subscribeNext:^(id x) {
           expect(disposable).notTo(beNil());
 
           [values addObject:x];
