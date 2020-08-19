@@ -6,9 +6,9 @@
 //  Copyright (c) 2012 GitHub, Inc. All rights reserved.
 //
 
-#import "RACChannel.h"
+#import <ReactiveObjC/RACChannel.h>
 #import <ReactiveObjC/EXTKeyPathCoding.h>
-#import "metamacros.h"
+#import <ReactiveObjC/metamacros.h>
 
 /// Creates a RACKVOChannel to the given key path. When the targeted object
 /// deallocates, the channel will complete.

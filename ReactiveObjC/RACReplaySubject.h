@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 GitHub, Inc. All rights reserved.
 //
 
-#import "RACSubject.h"
+#import <ReactiveObjC/RACSubject.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -7,8 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RACAnnotations.h"
-#import "RACStream.h"
+#import <ReactiveObjC/RACAnnotations.h>
+#import <ReactiveObjC/RACStream.h>
 
 @class RACDisposable;
 @class RACScheduler;
