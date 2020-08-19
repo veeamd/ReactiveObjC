@@ -107,10 +107,15 @@ QuickConfigurationBegin(RACSequenceExampleGroups)
     });
 
     qck_it(@"should archive", ^{
-      NSData *data = [NSKeyedArchiver archivedDataWithRootObject:sequence];
+      NSError *error;
+      NSData *data = [NSKeyedArchiver archivedDataWithRootObject:sequence requiringSecureCoding:NO error:&error];
       expect(data).notTo(beNil());
 
-      RACSequence *unarchived = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+      NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
+      expect(error).to(beNil());
+
+      unarchiver.requiresSecureCoding = NO;
+      RACSequence *unarchived = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
       expect(unarchived).to(equal(sequence));
     });
 
