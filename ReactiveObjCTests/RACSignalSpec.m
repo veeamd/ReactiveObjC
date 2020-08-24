@@ -121,7 +121,7 @@ qck_describe(@"RACStream", ^{
     }];
 
     return [RACDisposable disposableWithBlock:^{
-      ++done;
+      atomic_fetch_add(&done, 1);
     }];
   }];
 

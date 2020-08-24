@@ -17,7 +17,7 @@
 #import "RACScheduler.h"
 #import "RACSequence.h"
 #import "RACSignal+Operations.h"
-#import <libkern/OSAtomic.h>
+#import <stdatomic.h>
 
 NSString * const RACCommandErrorDomain = @"RACCommandErrorDomain";
 NSString * const RACUnderlyingCommandErrorKey = @"RACUnderlyingCommandErrorKey";
@@ -26,7 +26,7 @@ const NSInteger RACCommandErrorNotEnabled = 1;
 
 @interface RACCommand () {
   // Atomic backing variable for `allowsConcurrentExecution`.
-  volatile uint32_t _allowsConcurrentExecution;
+  atomic_bool _allowsConcurrentExecution;
 }
 
 /// A subject that sends added execution signals.
@@ -55,9 +55,9 @@ const NSInteger RACCommandErrorNotEnabled = 1;
 
 - (void)setAllowsConcurrentExecution:(BOOL)allowed {
   if (allowed) {
-    OSAtomicOr32Barrier(1, &_allowsConcurrentExecution);
+    _allowsConcurrentExecution = true;
   } else {
-    OSAtomicAnd32Barrier(0, &_allowsConcurrentExecution);
+    _allowsConcurrentExecution = false;
   }
 
   [self.allowsConcurrentExecutionSubject sendNext:@(_allowsConcurrentExecution)];
