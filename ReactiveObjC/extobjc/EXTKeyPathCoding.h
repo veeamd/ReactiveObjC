@@ -8,7 +8,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "metamacros.h"
+#import <ReactiveObjC/metamacros.h>
 
 /**
  * \@rac_keypath allows compile-time verification of key paths. Given a real object

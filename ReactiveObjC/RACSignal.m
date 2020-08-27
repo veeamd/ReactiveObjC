@@ -23,7 +23,7 @@
 #import "RACSubject.h"
 #import "RACSubscriber+Private.h"
 #import "RACTuple.h"
-#import <libkern/OSAtomic.h>
+#import <stdatomic.h>
 
 @implementation RACSignal
 
@@ -108,12 +108,12 @@
   return [[RACSignal createSignal:^(id<RACSubscriber> subscriber) {
     RACSignalBindBlock bindingBlock = block();
 
-    __block volatile int32_t signalCount = 1;   // indicates self
+    __block atomic_int signalCount = 1;   // indicates self
 
     RACCompoundDisposable *compoundDisposable = [RACCompoundDisposable compoundDisposable];
 
     void (^completeSignal)(RACDisposable *) = ^(RACDisposable *finishedDisposable) {
-      if (OSAtomicDecrement32Barrier(&signalCount) == 0) {
+      if (atomic_fetch_sub(&signalCount, 1) - 1 == 0) {
         [subscriber sendCompleted];
         [compoundDisposable dispose];
       } else {
@@ -122,7 +122,7 @@
     };
 
     void (^addSignal)(RACSignal *) = ^(RACSignal *signal) {
-      OSAtomicIncrement32Barrier(&signalCount);
+      atomic_fetch_add(&signalCount, 1);
 
       RACSerialDisposable *selfDisposable = [[RACSerialDisposable alloc] init];
       [compoundDisposable addDisposable:selfDisposable];
@@ -363,7 +363,7 @@
 
 - (instancetype)flattenMap:(RACSignal *(^)(id))block {
   return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
-    __block volatile int32_t subscriptionCount = 1;
+    __block atomic_int subscriptionCount = 1;
 
     RACCompoundDisposable *disposable = [RACCompoundDisposable compoundDisposable];
 
@@ -378,7 +378,7 @@
       }
       NSCAssert([signal isKindOfClass:RACSignal.class], @"Expected a RACSignal, got %@", signal);
 
-      OSAtomicIncrement32(&subscriptionCount);
+      atomic_fetch_add(&subscriptionCount, 1);
 
       RACDisposable *innerDisposable = [signal subscribeNext:^(id x) {
         [subscriber sendNext:x];
@@ -386,7 +386,7 @@
         [subscriber sendError:error];
         [disposable dispose];
       } completed:^{
-        if (!OSAtomicDecrement32(&subscriptionCount)) {
+        if (atomic_fetch_sub(&subscriptionCount, 1) - 1 == 0) {
           [subscriber sendCompleted];
         }
       }];
@@ -395,7 +395,7 @@
     } error:^(NSError *error) {
       [subscriber sendError:error];
     } completed:^{
-      if (!OSAtomicDecrement32(&subscriptionCount)) {
+      if (atomic_fetch_sub(&subscriptionCount, 1) - 1 == 0) {
         [subscriber sendCompleted];
       }
     }];

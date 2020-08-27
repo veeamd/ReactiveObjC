@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 GitHub, Inc. All rights reserved.
 //
 
-#import "RACDisposable.h"
+#import <ReactiveObjC/RACDisposable.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
