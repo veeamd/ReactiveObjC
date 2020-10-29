@@ -17,6 +17,9 @@ PlaygroundUtility.remap
 
 # SwiftPM
 .build
+# folder location to save generated xcframework
+xcframework
 
 # Carthage
 Carthage/Build
+
