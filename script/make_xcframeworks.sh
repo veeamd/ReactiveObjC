@@ -7,7 +7,7 @@ SCHEMA_NAME="ReactiveObjC-iOS"
 #set workspace name
 WORKSPACE_NAME="${PROJECT_NAME}.xcworkspace"
 #xcframework path
-FRAMEWORK_PATH="${PROJECT_DIR}/${FRAMEWORK_FOLDER_NAME}/${PROJECT_NAME}.xcframework"
+FRAMEWORK_PATH="${PROJECT_DIR}/${FRAMEWORK_FOLDER_NAME}/${SCHEMA_NAME}.xcframework"
 # set path for iOS simulator archive
 SIMULATOR_ARCHIVE_PATH="${PROJECT_DIR}/${FRAMEWORK_FOLDER_NAME}/simulator.xcarchive"
 # set path for iOS device archive
