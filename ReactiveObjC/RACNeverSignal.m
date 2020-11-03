@@ -8,7 +8,7 @@
 
 #import "RACNeverSignal.h"
 
-#import <ReactiveObjC/EXTScope.h>
+#import "EXTScope.h"
 
 #import "RACCompoundDisposable.h"
 #import "RACSubscriber.h"

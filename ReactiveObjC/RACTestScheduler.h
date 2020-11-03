@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 GitHub, Inc. All rights reserved.
 //
 
-#import <ReactiveObjC/RACScheduler.h>
+#import "RACScheduler.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

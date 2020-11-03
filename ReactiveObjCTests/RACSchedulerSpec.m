@@ -11,7 +11,7 @@
 
 #import "RACScheduler.h"
 
-#import <ReactiveObjC/EXTScope.h>
+#import "EXTScope.h"
 #import <stdatomic.h>
 
 #import "RACScheduler+Private.h"

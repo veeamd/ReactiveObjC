@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <ReactiveObjC/RACSignal.h>
+#import "RACSignal.h"
 
 @class RACCommand;
 @class RACDisposable;

@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <ReactiveObjC/RACAnnotations.h>
+#import "RACAnnotations.h"
 
 @class RACDisposable;
 @class RACSignal<__covariant ValueType>;

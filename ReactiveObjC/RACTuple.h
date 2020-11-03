@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <ReactiveObjC/metamacros.h>
+#import "metamacros.h"
 
 @class RACSequence;
 

@@ -11,7 +11,7 @@
 
 #import "RACSubscriberExamples.h"
 
-#import <ReactiveObjC/EXTScope.h>
+#import "EXTScope.h"
 #import <stdatomic.h>
 
 #import "RACBehaviorSubject.h"

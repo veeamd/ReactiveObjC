@@ -6,8 +6,8 @@
 //  Copyright (c) 2013 GitHub, Inc. All rights reserved.
 //
 
-#import <ReactiveObjC/RACSignal.h>
-#import <ReactiveObjC/RACSubscriber.h>
+#import "RACSignal.h"
+#import "RACSubscriber.h"
 
 @class RACChannelTerminal<ValueType>;
 

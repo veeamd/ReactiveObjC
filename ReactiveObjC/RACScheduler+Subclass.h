@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <ReactiveObjC/RACScheduler.h>
+#import "RACScheduler.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

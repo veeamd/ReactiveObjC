@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <ReactiveObjC/RACStream.h>
+#import "RACStream.h"
 
 @class RACTuple;
 @class RACScheduler;

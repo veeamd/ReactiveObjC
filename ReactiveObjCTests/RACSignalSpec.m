@@ -14,7 +14,7 @@
 #import "RACStreamExamples.h"
 #import "RACTestObject.h"
 
-#import <ReactiveObjC/EXTKeyPathCoding.h>
+#import "EXTKeyPathCoding.h"
 #import <stdatomic.h>
 
 #import "NSObject+RACDeallocating.h"
