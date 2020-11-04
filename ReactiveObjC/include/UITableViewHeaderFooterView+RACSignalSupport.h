@@ -1,0 +1,1 @@
+../UITableViewHeaderFooterView+RACSignalSupport.h
