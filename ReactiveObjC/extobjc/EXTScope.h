@@ -7,7 +7,11 @@
 //  Released under the MIT license.
 //
 
-#import <metamacros.h>
+#if SWIFT_PACKAGE
+#import "metamacros.h"
+#else
+#import <ReactiveObjC/metamacros.h>
+#endif
 
 /**
  * \@rac_onExit defines some code to be executed when the current scope exits. The

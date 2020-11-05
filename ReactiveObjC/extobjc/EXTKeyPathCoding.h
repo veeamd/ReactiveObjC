@@ -8,7 +8,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <metamacros.h>
+#if SWIFT_PACKAGE
+#import "metamacros.h"
+#else
+#import <ReactiveObjC/metamacros.h>
+#endif
 
 /**
  * \@rac_keypath allows compile-time verification of key paths. Given a real object
