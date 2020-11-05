@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "ReactiveObjC",
     products: [
-        .library(name: "ReactiveObjC", type: .dynamic, targets: ["ReactiveObjC-iOS"])
+        .library(name: "ReactiveObjC", targets: ["ReactiveObjC-iOS"])
     ],
     targets: [
         .target(name: "ReactiveObjC-iOS",
