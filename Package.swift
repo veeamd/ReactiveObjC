@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "ReactiveObjC",
+    platforms: [.iOS(.v13)],
     products: [
         .library(name: "ReactiveObjC", targets: ["ReactiveObjC-iOS"])
     ],
