@@ -93,7 +93,7 @@
 
   @rac_weakify(self);
 
-  void (^cleanUp)() = ^{
+  void (^cleanUp)(void) = ^{
     @rac_strongify(self);
 
     id target = self.target;
